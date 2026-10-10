@@ -25,7 +25,7 @@ Articles live in the **Portfolio — Articles** database (Notion → Blog).
 
 1. Add a page, write it like any Notion page.
 2. Fill in **Date**, **Description**, **Tags** (philosophy / rails / ai engineering / art) and optionally **Cover**, **Slug**, **Margin notes** (one sticky note per line).
-3. Set **Status** to **Published**. Within the hour it's live (or run the GitHub action by hand to publish right away).
+3. Set **Status** to **Published**. Within the hour it's live (or trigger a deploy by hand to publish right away).
 
 How Notion formatting shows up:
 
@@ -46,16 +46,17 @@ To unpublish, set Status back to Draft.
 3. Copy the database ID (the 32 characters in its URL before `?v=`).
 4. Locally: `cp .env.example .env` and fill in `NOTION_TOKEN` and `NOTION_DATABASE_ID`.
 
-### 2. Hosting on Vercel
-1. Push this repo to GitHub and import it in Vercel (framework: Astro, build command `npm run build`).
-2. In Vercel → Settings → Environment Variables add `NOTION_TOKEN`, `NOTION_DATABASE_ID` and `SITE_URL`.
-3. Vercel → Settings → Git → **Deploy Hooks**: create one and copy the URL.
+### 2. Hosting on Render
+1. In Render: **New → Blueprint**, pick this repo. `render.yaml` sets up a free static site (build `npm ci && npm run build`, publish `dist`).
+2. When asked, fill in `NOTION_TOKEN` (the Notion secret) and `SITE_URL` (your domain, or the `onrender.com` URL for now).
+3. Every push to `main` redeploys automatically.
+4. In the service's **Settings → Deploy Hook**, copy the hook URL for the next step.
 
 ### 3. Auto-publish
-In GitHub → Settings → Secrets and variables → Actions add `NOTION_TOKEN`, `NOTION_DATABASE_ID` and `VERCEL_DEPLOY_HOOK`.
+In GitHub → Settings → Secrets and variables → Actions add `NOTION_TOKEN`, `NOTION_DATABASE_ID` and `DEPLOY_HOOK` (the Render deploy hook URL).
 
-`.github/workflows/publish.yml` then checks Notion every hour and redeploys only if an article changed. To publish instantly, open **Actions → Publish from Notion → Run workflow** (works from the GitHub mobile app too).
+`.github/workflows/publish.yml` then checks Notion every hour and redeploys only if an article changed. To publish instantly, open **Actions → Publish from Notion → Run workflow** (works from the GitHub mobile app too), or hit **Manual Deploy** in Render.
 
-On a paid Notion plan you can also add a database button with the action **Send webhook** pointing at the Vercel deploy hook URL, for one-click publishing from inside Notion.
+On a paid Notion plan you can also add a database button with the action **Send webhook** pointing at the deploy hook URL, for one-click publishing from inside Notion.
 
 If the Notion sync fails during a build, the build fails on purpose so the previous version stays live.

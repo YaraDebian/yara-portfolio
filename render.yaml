@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: yara-portfolio
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: NOTION_DATABASE_ID
+        value: c170bcdaddaa4f039db95cd05a4f8c51
+      - key: NOTION_TOKEN
+        sync: false
+      - key: SITE_URL
+        sync: false

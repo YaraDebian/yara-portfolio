@@ -70,7 +70,7 @@ const statusOf = (page) => {
 };
 
 // "Ready" articles sync locally as drafts for review; deploy builds skip them so their images never reach the public site.
-const isDeploy = Boolean(process.env.VERCEL || process.env.CI);
+const isDeploy = Boolean(process.env.RENDER || process.env.VERCEL || process.env.CI);
 const isSynced = (page) => statusOf(page) === 'published' || (!isDeploy && statusOf(page) === 'ready');
 
 // Notion file URLs are signed and expire after ~1h, so every image is downloaded into the build.
