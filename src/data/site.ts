@@ -1,22 +1,21 @@
 export const profile = {
   name: 'Yara Debian',
   role: 'AI Engineer',
-  city: '[CITY]',
-  email: '[EMAIL]',
+  city: 'Barcelona',
+  email: 'yaradebian1@gmail.com',
   description:
     'AI engineer who still thinks in Ruby, speaker who asks slightly-too-big questions, and weekend clay sculptor. Notes on code, art, philosophy and learning AI in public.',
   links: [
     { label: 'linkedin', href: 'https://www.linkedin.com/in/yara-debian-512a011a0/' },
     { label: 'github', href: 'https://github.com/YaraDebian' },
-    { label: 'instagram [handle]', href: '#' },
   ],
 };
 
 export const currently = [
-  ['reading', 'Sophie’s World'],
-  ['learning', '[WHAT YOU’RE LEARNING]'],
-  ['sculpting', '[CURRENT CLAY PROJECT]'],
-  ['wondering', 'why bad code bothers us when it works'],
+  ['reading', 'Big Magic by Elizabeth Gilbert'],
+  ['learning', 'Use AI to build FullCircle'],
+  ['sculpting', 'Fall inspired pieces'],
+  ['wondering', 'how can I embrace this weather to the max'],
 ];
 
 export const pastel = {
@@ -29,16 +28,16 @@ export const pastel = {
 
 export const chapters = [
   {
-    label: 'prologue · [YEAR]',
+    label: 'prologue · 2020',
     title: 'the practical choice',
-    body: '[STUDIES / FIRST ROLE]. Code was sensible, not a calling — yet.',
+    body: 'Computer engineering. Code was sensible, not a calling, yet.',
     tape: pastel.peach,
     tilt: -1.5,
   },
   {
-    label: 'chapter 1 · [YEARS]',
+    label: 'chapter 1 · 2022',
     title: 'Rails @ Factorial',
-    body: 'User-focused web apps, a soft spot for clean code, and mentoring — bridging vision and development.',
+    body: 'User-focused web app, a soft spot for clean code, and mentoring — bridging vision and development.',
     tape: pastel.sky,
     tilt: 1.2,
   },
@@ -52,7 +51,7 @@ export const chapters = [
   {
     label: 'chapter 3 · now ★',
     title: 'AI engineer',
-    body: '[COMPANY] — [WHAT YOU BUILD]. AI raised the floor on <em>how</em>; I’m here for the <em>why</em>.',
+    body: 'Factorial. AI raised the floor on <em>how</em>; I’m here for the <em>why</em>.',
     tape: pastel.butter,
     tilt: 1.8,
     current: true,
@@ -90,7 +89,7 @@ export const talks: Talk[] = [
     event: 'Rubycon',
     year: '2026',
     blurb:
-      'Are you building things, or are you thinking — and code is just the residue? Four philosophers, one Rails controller, an N+1 that was secretly wise, and a twist borrowed from <em>Sophie’s World</em>.',
+      'Are you building things, or are you thinking, and code is just the residue? Four philosophers, one Rails controller, an N+1 that was secretly wise, and a twist borrowed from <em>Sophie’s World</em>.',
     color: pastel.sky,
     art: 'temple',
     tilt: 0.9,
@@ -101,9 +100,9 @@ export const talks: Talk[] = [
 
 // Drop photos into public/made/ and set `src` (e.g. '/made/vase.jpg'); without one a labelled placeholder shows.
 export const made: { src?: string; title: string; medium: string; year: string; color: string; tilt: number }[] = [
-  { title: '[title]', medium: 'air-dry clay', year: '[year]', color: pastel.peach, tilt: -3 },
-  { title: '[title]', medium: 'oil pastel', year: '[year]', color: pastel.sky, tilt: 2 },
-  { title: '[title]', medium: 'air-dry clay', year: '[year]', color: pastel.lilac, tilt: -1 },
+  { src: '/made/eclesia-flower.JPG', title: 'Eclesia flower', medium: 'air-dry clay', year: '2026', color: pastel.peach, tilt: -3 },
+  { src: '/made/monet-pastel.JPG', title: 'DIY Monet', medium: 'oil pastel', year: '2025', color: pastel.sky, tilt: 2 },
+  { src: '/made/3d-starry-night.JPG', title: '3D Starry night', medium: 'air-dry clay', year: '2026', color: pastel.lilac, tilt: -1 },
 ];
 
 export const tagColors: Record<string, string> = {

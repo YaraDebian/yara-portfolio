@@ -72,11 +72,11 @@ const chips = [{ label: 'everything', tag: '', bg: 'var(--butter)' }, ...tags.ma
 <style>
   .hero {
     padding-top: clamp(40px, 6vw, 88px); padding-bottom: 40px;
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr)); gap: 32px 56px; align-items: end;
+    display: flex; flex-wrap: wrap; gap: 32px 56px; align-items: flex-end;
   }
-  .contents { margin: 0; font-size: clamp(96px, 13vw, 200px); line-height: 0.78; }
+  .contents { margin: 0; flex: 0 0 auto; font-size: clamp(88px, 10vw, 168px); line-height: 0.78; }
   .contents :global(.mark svg) { bottom: -4px; height: 28px; }
-  .hero-copy { display: flex; flex-direction: column; gap: 16px; }
+  .hero-copy { flex: 1 1 340px; display: flex; flex-direction: column; gap: 16px; padding-bottom: 8px; }
   .lede-big { margin: 0; max-width: 38ch; font-size: clamp(20px, 1.8vw, 24px); line-height: 1.5; font-weight: 300; }
   .count { margin: 0; font-size: 28px; color: var(--pen); transform: rotate(-1.5deg); align-self: flex-start; }
 

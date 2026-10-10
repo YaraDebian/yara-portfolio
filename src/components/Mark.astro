@@ -12,9 +12,9 @@ const paths = {
 ---
 <span class="mark">
   <slot />{variant === 'circle' ? (
-    <svg viewBox="0 0 300 120" aria-hidden="true" class="circle"><ellipse cx="150" cy="60" rx="146" ry="52" fill="none" stroke={color} stroke-width="6" filter="url(#yd-pastel)" transform="rotate(-3 150 60)" /></svg>
+    <svg viewBox="0 0 300 120" preserveAspectRatio="none" aria-hidden="true" class="circle"><ellipse cx="150" cy="60" rx="146" ry="52" fill="none" stroke={color} stroke-width="6" vector-effect="non-scaling-stroke" filter="url(#yd-pastel)" transform="rotate(-3 150 60)" /></svg>
   ) : (
-    <svg viewBox="0 0 300 30" aria-hidden="true"><path d={paths[variant]} fill="none" stroke={color} stroke-width={width} stroke-linecap="round" filter="url(#yd-pastel)" /></svg>
+    <svg viewBox="0 0 300 30" preserveAspectRatio="none" aria-hidden="true"><path d={paths[variant]} fill="none" stroke={color} stroke-width={width} stroke-linecap="round" vector-effect="non-scaling-stroke" filter="url(#yd-pastel)" /></svg>
   )}
 </span>
 <style>
