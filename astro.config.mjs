@@ -29,7 +29,7 @@ const wrapCodeInPaper = () => (tree) => {
 };
 
 export default defineConfig({
-  site: process.env.SITE_URL || 'https://yara-portfolio-go1f.onrender.com',
+  site: process.env.SITE_URL || 'https://www.yaradebian.com',
   integrations: [sitemap()],
   markdown: {
     shikiConfig: { theme: 'min-light' },
