@@ -1,0 +1,109 @@
+---
+import '../styles/global.css';
+import { profile } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  back?: { href: string; label: string };
+}
+const { title, description = profile.description, image, back } = Astro.props;
+const fullTitle = title ? `${title} — ${profile.name}` : `${profile.name} — ${profile.role}`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const tabs = [
+  { label: 'journey', href: '/#journey', bg: 'var(--lilac)' },
+  { label: 'talks', href: '/#talks', bg: 'var(--sky)' },
+  { label: 'clay & pastel', href: '/#made', bg: 'var(--peach)' },
+  { label: 'writing', href: '/writing', bg: 'var(--mint)' },
+  { label: 'say hi', href: '/#hi', bg: 'var(--butter)' },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title={`${profile.name} — notes & essays`} href="/rss.xml" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    {image && <meta property="og:image" content={new URL(image, Astro.site)} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Courier+Prime&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <svg width="0" height="0" aria-hidden="true" style="position: absolute">
+      <defs>
+        <filter id="yd-pastel" x="-10%" y="-40%" width="120%" height="180%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="3" result="warp" />
+          <feDisplacementMap in="SourceGraphic" in2="warp" scale="7" result="wobbly" />
+          <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="1" seed="9" result="grain" />
+          <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.4 1.7" result="holes" />
+          <feComposite in="wobbly" in2="holes" operator="in" />
+        </filter>
+      </defs>
+    </svg>
+
+    <header class="wrap top">
+      <a href="/" class="logo hand">
+        yara's notebook
+        <svg viewBox="0 0 200 14" width="170" height="12" aria-hidden="true"><path d="M3 9 C 40 2, 80 13, 120 6 S 180 4, 197 8" fill="none" stroke="#F4B49A" stroke-width="9" stroke-linecap="round" filter="url(#yd-pastel)" /></svg>
+      </a>
+      {back ? (
+        <a class="back hand" href={back.href}>{back.label}</a>
+      ) : (
+        <nav aria-label="Notebook sections" class="tabs hand">
+          {tabs.map((t) => <a href={t.href} style={`background: ${t.bg}`}>{t.label}</a>)}
+        </nav>
+      )}
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="wrap bottom hand">
+      <span>this notebook belongs to {profile.name} · if found, return to {profile.city}</span>
+      <nav aria-label="Elsewhere">
+        {profile.links.map((l) => <a href={l.href} target="_blank" rel="noopener">{l.label}</a>)}
+        <a href="/rss.xml">rss</a>
+      </nav>
+    </footer>
+
+    <script>
+      const io = new IntersectionObserver(
+        (entries) => entries.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))),
+        { threshold: 0.1 }
+      );
+      document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+    </script>
+
+    <style>
+      .top { padding-top: 22px; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; }
+      .logo { display: inline-flex; flex-direction: column; min-height: 44px; text-decoration: none; color: var(--ink); font-size: 34px; line-height: 1; }
+      .logo svg { overflow: visible; }
+      .tabs { display: flex; flex-wrap: wrap; gap: 6px; font-size: 26px; }
+      .tabs a {
+        display: flex; align-items: center; min-height: 44px; padding: 0 18px;
+        border-radius: 14px 14px 4px 4px; color: var(--ink); text-decoration: none;
+        transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+      }
+      .tabs a:hover { transform: translateY(-5px); color: var(--ink); }
+      .back { display: inline-flex; align-items: center; min-height: 44px; font-size: 28px; }
+      .bottom {
+        margin-top: 40px; padding-top: 22px; padding-bottom: 40px;
+        display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 32px;
+        border-top: 2px dashed var(--dash); font-size: 26px; color: var(--ink-soft);
+      }
+      .bottom nav { display: flex; flex-wrap: wrap; gap: 4px 24px; }
+      .bottom a { display: inline-flex; align-items: center; min-height: 44px; }
+    </style>
+  </body>
+</html>

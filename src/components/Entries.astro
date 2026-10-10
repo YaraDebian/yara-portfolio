@@ -1,0 +1,42 @@
+---
+import type { Post } from '../lib';
+import { readingTime } from '../lib';
+
+interface Props { posts: Post[]; numbered?: boolean; total?: number }
+const { posts, numbered = false, total = posts.length } = Astro.props;
+const newest = posts[0]?.id;
+---
+<ol class="entries">
+  {posts.map((p, i) => (
+    <li data-tags={JSON.stringify(p.data.tags)}>
+      <a href={`/writing/${p.id}`} class="entry">
+        {numbered && <span class="num hand">{String(total - i).padStart(2, '0')}</span>}
+        <span class="title-row">
+          <span class="title">
+            {p.data.title}
+            {!numbered && p.id === newest && <span class="new hand">new!</span>}
+            {p.data.draft && <span class="new hand">draft</span>}
+          </span>
+          <span class="leader" aria-hidden="true"></span>
+        </span>
+        <span class="meta hand">{[p.data.tags[0], numbered && `${readingTime(p.body)} min`].filter(Boolean).join(' · ')}</span>
+      </a>
+    </li>
+  ))}
+</ol>
+<style>
+  .entries { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; max-width: 1000px; }
+  .entry {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 16px; min-height: 64px; padding: 12px 0;
+    text-decoration: none; color: var(--ink);
+    transition: transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .entry:hover { transform: translateX(10px); color: var(--ink); }
+  .num { font-size: 30px; color: var(--rose); min-width: 40px; }
+  .title-row { flex: 1 1 300px; display: flex; align-items: baseline; gap: 14px; min-width: 0; }
+  .title { font-size: clamp(22px, 2.2vw, 28px); line-height: 1.25; }
+  .new { display: inline-block; transform: rotate(-6deg); font-size: 26px; color: var(--rose); margin-left: 8px; }
+  .leader { flex: 1 1 30px; border-bottom: 2px dotted var(--leader); transform: translateY(-6px); }
+  .meta { font-size: 26px; color: var(--ink-soft); white-space: nowrap; }
+  @media (prefers-reduced-motion: reduce) { .entry { transition: none; } }
+</style>

@@ -1,0 +1,146 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Mark from '../../components/Mark.astro';
+import { getPosts, readingTime, fmtDate, type Post } from '../../lib';
+import { profile, tagColor, markColor } from '../../data/site';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { slug: post.id },
+    props: { post, num: posts.length - i, newer: posts[i - 1], older: posts[i + 1], total: posts.length },
+  }));
+}
+
+interface Props { post: Post; num: number; newer?: Post; older?: Post; total: number }
+const { post, num, newer, older } = Astro.props;
+const { Content } = await render(post);
+const { title, description, date, tags, cover, notes } = post.data;
+const words = title.split(' ');
+const titleHead = words.slice(0, -2).join(' ');
+const titleTail = words.slice(-2).join(' ');
+const pad = (n: number) => String(n).padStart(2, '0');
+const sibling = newer ?? older;
+const stickies = ['var(--butter)', 'var(--mint)', 'var(--lilac)', 'var(--sky)'];
+---
+<Base title={title} description={description} image={cover} back={{ href: '/writing', label: '← contents' }}>
+  <article>
+    <header class="wrap head">
+      <p class="hand meta">entry {pad(num)}{tags[0] && ` · ${tags[0]}`} · {readingTime(post.body)} min · {fmtDate(date).toLowerCase()}</p>
+      <h1 class="hand title">{titleHead} <Mark color={markColor(tags[0])} width={18}>{titleTail}</Mark></h1>
+      {description && <p class="dek">{description}</p>}
+    </header>
+
+    {cover && (
+      <div class="wrap">
+        <figure class="cover"><span class="tape" style="background: var(--sky); left: 8%; transform: rotate(-5deg)" aria-hidden="true"></span><img src={cover} alt="" /></figure>
+      </div>
+    )}
+
+    <div class="wrap body">
+      <div class="prose">
+        <Content />
+        <div class="sign">
+          <span class="hand signature">— Yara</span>
+          <a class="hand" href={`mailto:${profile.email}?subject=${encodeURIComponent('Re: ' + title)}`}>did this bother you too? write back →</a>
+        </div>
+      </div>
+      {notes.length > 0 && (
+        <aside class="margin">
+          {notes.map((n, i) => (
+            i % 2 === 1
+              ? <p class="hand pen" style={`transform: rotate(${i % 4 === 1 ? -2 : 1.5}deg)`}>{n}</p>
+              : <div class="sticky" style={`background: ${stickies[(i / 2) % stickies.length]}; transform: rotate(${i % 4 === 0 ? 2.5 : -1.5}deg)`}>{n}</div>
+          ))}
+        </aside>
+      )}
+    </div>
+
+    {sibling && (
+      <div class="wrap next-wrap">
+        <a href={`/writing/${sibling.id}`} class="next" style={`background: ${sibling.data.tags[0] ? tagColor(sibling.data.tags[0]) : 'var(--lilac)'}`}>
+          <span class="hand next-meta">{newer ? 'next' : 'previous'} entry · {pad(newer ? num + 1 : num - 1)}{sibling.data.tags[0] && ` · ${sibling.data.tags[0]}`}</span>
+          <span class="hand next-title">{sibling.data.title} →</span>
+        </a>
+      </div>
+    )}
+  </article>
+</Base>
+
+<style>
+  .head { padding-top: clamp(40px, 6vw, 88px); padding-bottom: 48px; display: flex; flex-direction: column; gap: 22px; }
+  .meta { margin: 0; font-size: 28px; color: var(--rose); transform: rotate(-1.5deg); align-self: flex-start; }
+  .title { margin: 0; max-width: 14ch; font-size: clamp(76px, 10vw, 152px); line-height: 0.8; text-wrap: balance; }
+  .title :global(.mark svg) { bottom: -6px; height: 28px; }
+  .dek { margin: 12px 0 0; max-width: 44ch; font-size: clamp(21px, 1.9vw, 25px); line-height: 1.5; font-weight: 300; }
+
+  .cover { position: relative; margin: 0 0 32px; max-width: 900px; transform: rotate(-0.6deg); box-shadow: var(--shadow); background: #fff; padding: 14px; }
+
+  .body { padding-top: 24px; padding-bottom: 40px; display: flex; flex-wrap: wrap; gap: 40px 64px; align-items: flex-start; }
+  .prose { flex: 999 1 560px; min-width: 0; max-width: 700px; font-size: 20px; line-height: 1.75; font-weight: 300; }
+  .prose :global(p) { margin: 0 0 26px; }
+  .prose :global(h2) { margin: 54px 0 22px; font-family: var(--hand); font-weight: 400; font-size: clamp(46px, 4.4vw, 62px); line-height: 0.9; }
+  .prose :global(h3) { margin: 40px 0 14px; font-family: var(--hand); font-weight: 400; font-size: 40px; line-height: 1; }
+  .prose :global(strong) { font-weight: 500; }
+  .prose :global(ul), .prose :global(ol) { padding-left: 1.2em; margin: 0 0 26px; }
+  .prose :global(li::marker) { color: var(--rose); }
+  .prose :global(hr) { border: 0; border-top: 2px dashed var(--dash); margin: 48px 0; }
+  .prose :global(img) { margin: 32px 0 8px; background: #fff; padding: 12px; box-shadow: var(--shadow); transform: rotate(-0.6deg); }
+  .prose :global(img + em) { display: block; font-family: var(--hand); font-style: normal; font-size: 26px; color: var(--pen); }
+
+  .prose :global(.code-paper) { position: relative; margin: 44px 0 34px; transform: rotate(-0.8deg); }
+  .prose :global(.code-paper::before), .prose :global(.code-paper::after) {
+    content: ''; position: absolute; top: -14px; width: 110px; height: 28px; z-index: 1;
+  }
+  .prose :global(.code-paper::before) { left: 8%; background: rgba(207, 226, 242, 0.9); transform: rotate(-5deg); }
+  .prose :global(.code-paper::after) { right: 8%; background: rgba(249, 213, 196, 0.9); transform: rotate(4deg); }
+  .prose :global(pre) {
+    margin: 0; padding: 32px 28px 28px;
+    background: #fff !important; box-shadow: var(--shadow); overflow-x: auto;
+    font-family: var(--mono); font-size: 15px; line-height: 1.7;
+  }
+  .prose :global(pre code) { font-family: inherit; }
+  .prose :global(:not(pre) > code) { font-family: var(--mono); font-size: 0.85em; background: var(--lilac); padding: 0.1em 0.35em; border-radius: 3px; }
+
+  .prose :global(blockquote) {
+    margin: 40px 0; padding: 30px 32px; background: var(--peach);
+    transform: rotate(1deg); box-shadow: var(--shadow);
+    font-family: var(--hand); font-size: clamp(36px, 3.4vw, 46px); line-height: 1; font-weight: 400;
+  }
+  .prose :global(blockquote p) { margin: 0 0 8px; }
+  .prose :global(blockquote p:last-child) { margin: 0; }
+  .prose :global(blockquote p + p:last-child) { font-size: 28px; color: var(--rose-deep); }
+
+  .prose :global(.callout) { display: flex; gap: 12px; margin: 34px 0; padding: 22px 24px; background: var(--butter); transform: rotate(-1deg); box-shadow: var(--shadow); font-family: var(--hand); font-size: 28px; line-height: 1.2; font-weight: 400; }
+  .prose :global(.callout p) { margin: 0; }
+
+  .prose :global(details) { margin: 0 0 26px; padding: 14px 20px; background: var(--card); box-shadow: var(--shadow); }
+  .prose :global(summary) { cursor: pointer; font-family: var(--hand); font-size: 28px; color: var(--pen); }
+
+  .prose :global(table) { display: block; overflow-x: auto; border-collapse: collapse; font-size: 17px; margin: 0 0 26px; }
+  .prose :global(th), .prose :global(td) { padding: 8px 14px; border-bottom: 2px dashed var(--dash); text-align: left; }
+
+  .prose :global(.hl-yellow) { --hl: var(--butter); }
+  .prose :global(.hl-purple) { --hl: var(--lilac); }
+  .prose :global(.hl-peach) { --hl: var(--peach); }
+  .prose :global(.hl-blue) { --hl: var(--sky); }
+  .prose :global(.hl-green) { --hl: var(--mint); }
+
+  .sign { margin-top: 26px; padding-top: 24px; border-top: 2px dashed var(--dash); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; }
+  .signature { font-size: 40px; color: var(--pen); transform: rotate(-3deg); }
+  .sign a { display: inline-flex; align-items: center; min-height: 48px; font-size: 28px; }
+
+  .margin { flex: 1 1 240px; max-width: 320px; display: flex; flex-direction: column; gap: 40px; padding-top: 12px; }
+  .pen { margin: 0; font-size: 28px; line-height: 1.15; color: var(--pen); }
+
+  .next-wrap { padding-top: 56px; padding-bottom: 96px; }
+  .next {
+    display: flex; flex-direction: column; gap: 10px; padding: clamp(28px, 4vw, 52px);
+    color: var(--ink); text-decoration: none; transform: rotate(-0.6deg); box-shadow: 0 14px 30px rgba(90, 70, 40, 0.12);
+    transition: transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .next:hover { transform: rotate(0deg) scale(1.01); color: var(--ink); }
+  .next-meta { font-size: 28px; color: var(--rose); }
+  .next-title { font-size: clamp(50px, 5.5vw, 84px); line-height: 0.88; }
+</style>

@@ -1,0 +1,23 @@
+{
+  "name": "yara-portfolio",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "sync": "node scripts/sync-notion.mjs",
+    "build": "node scripts/sync-notion.mjs && astro build",
+    "preview": "astro preview"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "@notionhq/client": "^2.3.0",
+    "astro": "^5.18.2",
+    "dotenv": "^18.0.7",
+    "notion-to-md": "^3.1.9"
+  }
+}

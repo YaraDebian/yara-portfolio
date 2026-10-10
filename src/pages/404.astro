@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+---
+<Base title="Page torn out" back={{ href: '/', label: '← back to page 1' }}>
+  <section class="wrap lost">
+    <p class="page-label">page 404</p>
+    <h1 class="page-title">this page was torn out</h1>
+    <p class="lede">Maybe I crossed it out, maybe it never existed. Either way, the rest of the notebook is still here.</p>
+    <div class="sticky note" style="background: var(--butter)">note to self: stop tearing out pages.</div>
+    <a href="/" class="btn-ink wiggle" style="transform: rotate(-1.5deg); align-self: flex-start">back to the first page ↩</a>
+  </section>
+</Base>
+<style>
+  .lost { min-height: 70vh; display: flex; flex-direction: column; justify-content: center; gap: 24px; padding-top: 60px; padding-bottom: 60px; }
+  .note { max-width: 320px; transform: rotate(2deg); }
+</style>

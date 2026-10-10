@@ -1,0 +1,105 @@
+---
+import Base from '../../layouts/Base.astro';
+import Mark from '../../components/Mark.astro';
+import Entries from '../../components/Entries.astro';
+import { getPosts, readingTime } from '../../lib';
+import { tagColor } from '../../data/site';
+
+const posts = await getPosts();
+const [featured] = posts;
+const tags = [...new Set(posts.flatMap((p) => p.data.tags))];
+const chips = [{ label: 'everything', tag: '', bg: 'var(--butter)' }, ...tags.map((t, i) => ({ label: t, tag: t, bg: tagColor(t, i + 1) }))];
+---
+<Base title="Notes & essays" description="Notes on the thinking behind the code — art, philosophy, Ruby, and learning AI engineering in public." back={{ href: '/', label: '← back to page 1' }}>
+  <section class="wrap hero">
+    <h1 class="hand contents"><Mark color="#D3E8CF" width={18}>contents</Mark></h1>
+    <div class="hero-copy">
+      <p class="lede-big">Notes on the thinking behind the code — art, philosophy, Ruby, and what I'm learning as an AI engineer.</p>
+      <p class="hand count">{posts.length} {posts.length === 1 ? 'entry' : 'entries'} so far — new ones whenever something bothers me</p>
+    </div>
+  </section>
+
+  {featured && (
+    <section class="wrap">
+      <a href={`/writing/${featured.id}`} class="featured">
+        <span class="tape" style="background: rgba(205,180,236,0.8); left: 12%; width: 120px; height: 30px; top: -14px; transform: rotate(-4deg)" aria-hidden="true"></span>
+        <div class="art" aria-hidden="true">
+          {featured.data.cover ? (
+            <img src={featured.data.cover} alt="" />
+          ) : (
+            <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+              <rect x="0" y="190" width="400" height="110" fill="#F4B49A" filter="url(#yd-pastel)" />
+              <circle cx="290" cy="110" r="46" fill="#FFF3C9" filter="url(#yd-pastel)" />
+              <path d="M20 150 C 120 120, 220 170, 400 140" fill="none" stroke="#CDB4EC" stroke-width="26" stroke-linecap="round" filter="url(#yd-pastel)" />
+              <path d="M96 190 V 112 M76 112 H 128 Q 136 112, 136 120 V 140 H 76 Z" fill="#2A2433" stroke="#2A2433" stroke-width="5" stroke-linejoin="round" />
+              <path d="M128 98 V 116" stroke="#2A2433" stroke-width="4" />
+              <rect x="128" y="90" width="20" height="12" fill="#B4507A" />
+            </svg>
+          )}
+        </div>
+        <div class="f-copy">
+          <span class="hand f-meta">newest{featured.data.tags[0] && ` · ${featured.data.tags[0]}`} · {readingTime(featured.body)} min</span>
+          <span class="hand f-title">{featured.data.title}</span>
+          {featured.data.description && <span class="f-dek">{featured.data.description}</span>}
+        </div>
+      </a>
+    </section>
+  )}
+
+  <section class="wrap list">
+    {tags.length > 0 && (
+      <div role="group" aria-label="Filter by topic" class="chips">
+        {chips.map((c, i) => (
+          <button type="button" class="hand chip" data-tag={c.tag} aria-pressed={i === 0 ? 'true' : 'false'} style={`background: ${c.bg}`}>{c.label}</button>
+        ))}
+      </div>
+    )}
+    <Entries posts={posts} numbered />
+  </section>
+</Base>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('.chip');
+  const rows = document.querySelectorAll<HTMLLIElement>('.entries > li');
+  chips.forEach((c) =>
+    c.addEventListener('click', () => {
+      chips.forEach((x) => x.setAttribute('aria-pressed', String(x === c)));
+      rows.forEach((r) => (r.hidden = !!c.dataset.tag && !JSON.parse(r.dataset.tags!).includes(c.dataset.tag)));
+    })
+  );
+</script>
+
+<style>
+  .hero {
+    padding-top: clamp(40px, 6vw, 88px); padding-bottom: 40px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr)); gap: 32px 56px; align-items: end;
+  }
+  .contents { margin: 0; font-size: clamp(96px, 13vw, 200px); line-height: 0.78; }
+  .contents :global(.mark svg) { bottom: -4px; height: 28px; }
+  .hero-copy { display: flex; flex-direction: column; gap: 16px; }
+  .lede-big { margin: 0; max-width: 38ch; font-size: clamp(20px, 1.8vw, 24px); line-height: 1.5; font-weight: 300; }
+  .count { margin: 0; font-size: 28px; color: var(--pen); transform: rotate(-1.5deg); align-self: flex-start; }
+
+  .featured {
+    position: relative; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr));
+    text-decoration: none; color: var(--ink); background: var(--card);
+    box-shadow: 0 14px 30px rgba(90, 70, 40, 0.12); transform: rotate(-0.6deg);
+    transition: transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .featured:hover { transform: rotate(-0.6deg) translateX(10px); color: var(--ink); }
+  .art { position: relative; min-height: 300px; background: var(--peach); overflow: hidden; }
+  .art svg, .art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .f-copy { display: flex; flex-direction: column; justify-content: center; gap: 16px; padding: clamp(28px, 4vw, 52px); }
+  .f-meta { font-size: 28px; color: var(--rose); }
+  .f-title { font-size: clamp(50px, 5vw, 76px); line-height: 0.88; }
+  .f-dek { font-size: 19px; line-height: 1.55; font-weight: 300; }
+
+  .list { padding-top: 72px; padding-bottom: 110px; display: flex; flex-direction: column; gap: 28px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border: 0;
+    border-radius: 14px 14px 4px 4px; color: var(--ink); font-size: 26px; cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .chip[aria-pressed='true'] { transform: translateY(-6px); }
+</style>
