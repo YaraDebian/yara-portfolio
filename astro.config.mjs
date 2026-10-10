@@ -1,6 +1,17 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
+const lazyImages = () => (tree) => {
+  const visit = (node) => {
+    if (node.type === 'element' && node.tagName === 'img') {
+      node.properties.loading = 'lazy';
+      node.properties.decoding = 'async';
+    }
+    node.children?.forEach(visit);
+  };
+  visit(tree);
+};
+
 const wrapCodeInPaper = () => (tree) => {
   const visit = (node) => {
     node.children?.forEach((child, i) => {
@@ -22,6 +33,6 @@ export default defineConfig({
   integrations: [sitemap()],
   markdown: {
     shikiConfig: { theme: 'min-light' },
-    rehypePlugins: [wrapCodeInPaper],
+    rehypePlugins: [wrapCodeInPaper, lazyImages],
   },
 });

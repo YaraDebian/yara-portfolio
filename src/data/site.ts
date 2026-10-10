@@ -37,12 +37,12 @@ export const chapters = [
   {
     label: 'chapter 1 · 2022',
     title: 'Rails @ Factorial',
-    body: 'User-focused web app, a soft spot for clean code, and mentoring — bridging vision and development.',
+    body: 'User-focused web app, a soft spot for clean code, and mentoring, bridging vision and development.',
     tape: pastel.sky,
     tilt: 1.2,
   },
   {
-    label: 'chapter 2 · 2025–26',
+    label: 'chapter 2 · 2025-26',
     title: 'on stage',
     body: 'Painting meets programming at Helvetic Ruby. Then Plato, Aristotle, Hegel and Kant walk into a Rails talk.',
     tape: pastel.lilac,

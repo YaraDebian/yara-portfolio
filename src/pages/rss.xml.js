@@ -5,7 +5,7 @@ import { profile } from '../data/site';
 export async function GET(context) {
   const posts = await getPosts();
   return rss({
-    title: `${profile.name} — notes & essays`,
+    title: `${profile.name} · notes & essays`,
     description: profile.description,
     site: context.site,
     items: posts.map((p) => ({

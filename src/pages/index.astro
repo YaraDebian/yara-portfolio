@@ -13,7 +13,7 @@ const posts = (await getPosts()).slice(0, 3);
     <div class="intro">
       <p class="hand date" data-today>page 1</p>
       <h1 class="hand hi">Hi, I'm <Mark color="#CDB4EC" variant="wave">Yara.</Mark></h1>
-      <p class="bio">I'm an <span class="hl" style="--hl: var(--peach)">AI engineer</span> <span class="aside hand">(new chapter! p.2)</span> who still thinks in Ruby, a speaker who asks slightly-too-big questions, and on weekends I squish <span class="hl" style="--hl: var(--lilac)">air-dry clay</span> and smudge oil pastels.</p>
+      <p class="bio">I'm an <span class="hl" style="--hl: var(--hl-peach)">AI engineer</span> <span class="aside hand">(new chapter! p.2)</span> who still thinks in Ruby, a speaker who asks slightly-too-big questions, and on weekends I squish <span class="hl" style="--hl: var(--hl-purple)">air-dry clay</span> and smudge oil pastels.</p>
       <p class="hand pen-note">→ this notebook is where I think out loud: code, art, philosophy, and learning AI in public.</p>
       <div class="ctas">
         <a href="#journey" class="btn-ink wiggle" style="transform: rotate(-1.5deg)">turn the page ↓</a>
@@ -26,7 +26,7 @@ const posts = (await getPosts()).slice(0, 3);
   <div class="wrap currently-row">
     <div class="sticky currently wiggle">
       <span class="c-head">currently…</span>
-      {currently.map(([k, v]) => <span>{k} — {k === 'reading' ? <em>{v}</em> : v}</span>)}
+      {currently.map(([k, v]) => <span>{k}: {k === 'reading' ? <em>{v}</em> : v}</span>)}
     </div>
   </div>
 
@@ -34,7 +34,7 @@ const posts = (await getPosts()).slice(0, 3);
     <div class="head reveal">
       <p class="page-label">page 2</p>
       <h2 class="page-title"><Mark color="#CFE2F2" width={14}>how I got here</Mark></h2>
-      <p class="lede">Plot twist: I didn't start coding out of passion. It was practical. To connect with it, I had to make logic appealing to a dreamy mind — first through art, then philosophy, now AI.</p>
+      <p class="lede">Plot twist: I didn't start coding out of passion. It was practical. To connect with it, I had to make logic appealing to a dreamy mind: first through art, then philosophy, now AI.</p>
     </div>
     <ol class="chapters">
       {chapters.map((c, i) => (
@@ -97,7 +97,7 @@ const posts = (await getPosts()).slice(0, 3);
     <div class="head reveal">
       <p class="page-label">page 4</p>
       <h2 class="page-title">made with my <Mark color="#D3E8CF">hands</Mark></h2>
-      <p class="lede">Air-dry clay and oil pastels — where I go when the code needs to rest.</p>
+      <p class="lede">Air-dry clay and oil pastels: where I go when the code needs to rest.</p>
     </div>
     <div class="polaroids">
       {made.map((m) => (
@@ -105,7 +105,7 @@ const posts = (await getPosts()).slice(0, 3);
           {m.src ? (
             <img src={m.src} alt={`${m.title}, ${m.medium}`} loading="lazy" />
           ) : (
-            <div class="placeholder" style={`background: ${m.color}`}>[PHOTO — {m.medium.toUpperCase()}]</div>
+            <div class="placeholder" style={`background: ${m.color}`}>[PHOTO: {m.medium.toUpperCase()}]</div>
           )}
           <figcaption class="hand">{m.title} · {m.medium} · {m.year}</figcaption>
         </figure>
@@ -121,7 +121,7 @@ const posts = (await getPosts()).slice(0, 3);
       </div>
       <a href="/writing" class="hand all">all of them →</a>
     </div>
-    {posts.length ? <Entries posts={posts} /> : <p class="hand soft empty">first entry coming soon — something is already bothering me.</p>}
+    {posts.length ? <Entries posts={posts} /> : <p class="hand soft empty">first entry coming soon. something is already bothering me.</p>}
   </section>
 
   <section id="hi" class="wrap section hi-section">
@@ -136,7 +136,7 @@ const posts = (await getPosts()).slice(0, 3);
         <span class="tape" style="background: var(--butter); left: 50%; transform: translateX(-50%) rotate(4deg); width: 110px; height: 28px; top: -14px" aria-hidden="true"></span>
         <p>who are you?</p>
         <p>where does the code come from?</p>
-        <p class="soft small">— a note in a mailbox, after <em>Sophie's World</em></p>
+        <p class="soft small">(a note in a mailbox, after <em>Sophie's World</em>)</p>
       </div>
     </div>
   </section>

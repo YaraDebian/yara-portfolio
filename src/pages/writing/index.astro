@@ -10,12 +10,12 @@ const [featured] = posts;
 const tags = [...new Set(posts.flatMap((p) => p.data.tags))];
 const chips = [{ label: 'everything', tag: '', bg: 'var(--butter)' }, ...tags.map((t, i) => ({ label: t, tag: t, bg: tagColor(t, i + 1) }))];
 ---
-<Base title="Notes & essays" description="Notes on the thinking behind the code — art, philosophy, Ruby, and learning AI engineering in public." back={{ href: '/', label: '← back to page 1' }}>
+<Base title="Notes & essays" description="Notes on the thinking behind the code: art, philosophy, Ruby, and learning AI engineering in public." back={{ href: '/', label: '← back to page 1' }}>
   <section class="wrap hero">
     <h1 class="hand contents"><Mark color="#D3E8CF" width={18}>contents</Mark></h1>
     <div class="hero-copy">
-      <p class="lede-big">Notes on the thinking behind the code — art, philosophy, Ruby, and what I'm learning as an AI engineer.</p>
-      <p class="hand count">{posts.length} {posts.length === 1 ? 'entry' : 'entries'} so far — half thoughts, half build notes</p>
+      <p class="lede-big">Notes on the thinking behind the code: art, philosophy, Ruby, and what I'm learning as an AI engineer.</p>
+      <p class="hand count">{posts.length} {posts.length === 1 ? 'entry' : 'entries'} so far - half thoughts, half build notes</p>
     </div>
   </section>
 

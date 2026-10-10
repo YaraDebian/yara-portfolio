@@ -14,6 +14,11 @@
   --sky: #cfe2f2;
   --mint: #d3e8cf;
   --butter: #f6e5a6;
+  --hl-yellow: #f6d86b;
+  --hl-purple: #d8c2f3;
+  --hl-peach: #f6c0a8;
+  --hl-blue: #b9d7f0;
+  --hl-green: #c3e3bb;
   --hand: 'Nanum Pen Script', 'Comic Sans MS', cursive;
   --serif: 'Newsreader', 'Iowan Old Style', Georgia, serif;
   --mono: 'Courier Prime', 'Courier New', monospace;
@@ -49,7 +54,20 @@ a:focus-visible, button:focus-visible { outline: 2px dashed var(--pen); outline-
 .mark { position: relative; display: inline-block; }
 .mark > svg { position: absolute; left: 0; bottom: -8px; width: 100%; height: 24px; overflow: visible; pointer-events: none; }
 
-.hl { padding: 0 3px; background: linear-gradient(transparent 52%, var(--hl, var(--butter)) 52%, var(--hl, var(--butter)) 90%, transparent 90%); }
+/* Highlighter stroke: uneven ends, slightly tilted, and repeated per line when the phrase wraps. */
+.hl {
+  --hl: var(--hl-yellow);
+  padding: 0 0.22em;
+  margin: 0 -0.22em;
+  border-radius: 0.8em 0.3em 0.9em 0.35em;
+  background-image:
+    linear-gradient(100deg, color-mix(in srgb, var(--hl) 70%, transparent) 0%, var(--hl) 4%, var(--hl) 94%, color-mix(in srgb, var(--hl) 60%, transparent) 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 68%;
+  background-position: 0 78%;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
 
 .tape { position: absolute; top: -12px; width: 96px; height: 26px; z-index: 1; opacity: 0.88; }
 

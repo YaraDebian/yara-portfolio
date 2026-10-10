@@ -64,16 +64,19 @@ const richToMd = (rich = []) =>
     })
     .join('');
 
-const isPublished = (page) => {
+const statusOf = (page) => {
   const s = prop(page, 'Status');
-  const name = s?.status?.name ?? s?.select?.name ?? (s?.checkbox ? 'Published' : '');
-  return name.toLowerCase() === 'published';
+  return (s?.status?.name ?? s?.select?.name ?? (s?.checkbox ? 'Published' : '')).toLowerCase();
 };
+
+// "Ready" articles sync locally as drafts for review; deploy builds skip them so their images never reach the public site.
+const isDeploy = Boolean(process.env.VERCEL || process.env.CI);
+const isSynced = (page) => statusOf(page) === 'published' || (!isDeploy && statusOf(page) === 'ready');
 
 // Notion file URLs are signed and expire after ~1h, so every image is downloaded into the build.
 const download = async (url, pageId) => {
   const key = createHash('sha1').update(url.split('?')[0]).digest('hex').slice(0, 16);
-  const res = await fetch(url);
+  const res = await fetch(url, { headers: { 'User-Agent': 'yara-portfolio/1.0 (https://github.com/YaraDebian/yara-portfolio)' } });
   if (!res.ok) throw new Error(`[notion] image download failed (${res.status}): ${url.split('?')[0]}`);
   const type = res.headers.get('content-type') ?? '';
   const ext = (type.split('/')[1] ?? '').split(/[;+]/)[0].replace('jpeg', 'jpg') || path.extname(new URL(url).pathname).slice(1) || 'png';
@@ -104,7 +107,7 @@ const run = async () => {
   await rm(IMG_DIR, { recursive: true, force: true });
   await mkdir(POSTS_DIR, { recursive: true });
 
-  const pages = (await queryAll()).filter(isPublished);
+  const pages = (await queryAll()).filter(isSynced);
   const seen = new Set();
 
   for (const page of pages) {
@@ -117,7 +120,7 @@ const run = async () => {
     });
     n2m.setCustomTransformer('paragraph', async (block) => richToMd(block.paragraph.rich_text));
     n2m.setCustomTransformer('quote', async (block) =>
-      richToMd(block.quote.rich_text).split('\n').map((l) => `> ${l}`).join('\n')
+      richToMd(block.quote.rich_text).split('\n').map((l) => `> ${l}`).join('\n>\n')
     );
     n2m.setCustomTransformer('callout', async (block) => {
       const c = block.callout;
@@ -151,6 +154,7 @@ const run = async () => {
       `tags: ${yaml(tags)}`,
       notes.length && `notes: ${yaml(notes)}`,
       cover && `cover: ${yaml(cover)}`,
+      statusOf(page) === 'ready' && 'draft: true',
       'source: notion',
       '---',
     ].filter(Boolean).join('\n');
@@ -158,7 +162,7 @@ const run = async () => {
     await writeFile(path.join(POSTS_DIR, `${slug}.md`), `${front}\n\n${body.trim()}\n`);
     console.log(`[notion] ✓ ${slug}`);
   }
-  console.log(`[notion] synced ${seen.size} published article(s).`);
+  console.log(`[notion] synced ${seen.size} article(s).`);
 };
 
 // Failing loudly matters: a failed build keeps the previous deploy live instead of shipping a blog with missing posts.

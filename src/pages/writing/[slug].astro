@@ -42,7 +42,7 @@ const stickies = ['var(--butter)', 'var(--mint)', 'var(--lilac)', 'var(--sky)'];
       <div class="prose">
         <Content />
         <div class="sign">
-          <span class="hand signature">— Yara</span>
+          <span class="hand signature">~ Yara</span>
           <a class="hand" href={`mailto:${profile.email}?subject=${encodeURIComponent('Re: ' + title)}`}>did this bother you too? write back →</a>
         </div>
       </div>
@@ -121,11 +121,11 @@ const stickies = ['var(--butter)', 'var(--mint)', 'var(--lilac)', 'var(--sky)'];
   .prose :global(table) { display: block; overflow-x: auto; border-collapse: collapse; font-size: 17px; margin: 0 0 26px; }
   .prose :global(th), .prose :global(td) { padding: 8px 14px; border-bottom: 2px dashed var(--dash); text-align: left; }
 
-  .prose :global(.hl-yellow) { --hl: var(--butter); }
-  .prose :global(.hl-purple) { --hl: var(--lilac); }
-  .prose :global(.hl-peach) { --hl: var(--peach); }
-  .prose :global(.hl-blue) { --hl: var(--sky); }
-  .prose :global(.hl-green) { --hl: var(--mint); }
+  .prose :global(.hl-yellow) { --hl: var(--hl-yellow); }
+  .prose :global(.hl-purple) { --hl: var(--hl-purple); }
+  .prose :global(.hl-peach) { --hl: var(--hl-peach); }
+  .prose :global(.hl-blue) { --hl: var(--hl-blue); }
+  .prose :global(.hl-green) { --hl: var(--hl-green); }
 
   .sign { margin-top: 26px; padding-top: 24px; border-top: 2px dashed var(--dash); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; }
   .signature { font-size: 40px; color: var(--pen); transform: rotate(-3deg); }
