@@ -79,10 +79,13 @@ const posts = (await getPosts()).slice(0, 3);
           <div class="ticket-body">
             <h3 class="hand">{t.title}</h3>
             <p set:html={t.blurb} />
-            <div class="hand ticket-links">
-              <a href={t.slides ?? '#'}>slides ↗</a>
-              <a href={t.video ?? '#'}>video ↗</a>
-            </div>
+            {(t.video || t.slides || t.summary) && (
+              <div class="hand ticket-links">
+                {t.video && <a href={t.video} target="_blank" rel="noopener">watch ↗</a>}
+                {t.slides && <a href={t.slides} target="_blank" rel="noopener">slides ↗</a>}
+                {t.summary && <a href={t.summary} target="_blank" rel="noopener">summary ↗</a>}
+              </div>
+            )}
           </div>
         </article>
       ))}

@@ -69,6 +69,7 @@ export type Talk = {
   tilt: number;
   slides?: string;
   video?: string;
+  summary?: string;
 };
 
 export const talks: Talk[] = [
@@ -81,6 +82,8 @@ export const talks: Talk[] = [
     color: pastel.lilac,
     art: 'palette',
     tilt: -0.8,
+    video: 'https://www.youtube.com/watch?v=phz2kCBv6OA',
+    summary: 'https://www.rubyevents.org/talks/the-art-of-code-finding-aesthetics-in-logic',
   },
   {
     title: 'From Plato to Production',
