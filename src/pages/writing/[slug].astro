@@ -43,7 +43,7 @@ const stickies = ['var(--butter)', 'var(--mint)', 'var(--lilac)', 'var(--sky)'];
         <Content />
         <div class="sign">
           <span class="hand signature">~ Yara</span>
-          <a class="hand" href={`mailto:${profile.email}?subject=${encodeURIComponent('Re: ' + title)}`}>did this bother you too? write back →</a>
+          <a class="hand" href={`mailto:${profile.email}?subject=${encodeURIComponent('Re: ' + title)}`}>thoughts on this? write back →</a>
         </div>
       </div>
       {notes.length > 0 && (
@@ -86,7 +86,7 @@ const stickies = ['var(--butter)', 'var(--mint)', 'var(--lilac)', 'var(--sky)'];
   .prose :global(ul), .prose :global(ol) { padding-left: 1.2em; margin: 0 0 26px; }
   .prose :global(li::marker) { color: var(--rose); }
   .prose :global(hr) { border: 0; border-top: 2px dashed var(--dash); margin: 48px 0; }
-  .prose :global(img) { margin: 32px 0 8px; background: #fff; padding: 12px; box-shadow: var(--shadow); transform: rotate(-0.6deg); }
+  .prose :global(img) { margin: 32px 0 8px; width: auto; max-width: 100%; max-height: min(560px, 70vh); background: #fff; padding: 12px; box-shadow: var(--shadow); transform: rotate(-0.6deg); }
   .prose :global(img + em) { display: block; font-family: var(--hand); font-style: normal; font-size: 26px; color: var(--pen); }
 
   .prose :global(.code-paper) { position: relative; margin: 44px 0 34px; transform: rotate(-0.8deg); }
