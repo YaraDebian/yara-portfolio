@@ -87,13 +87,15 @@ export const talks: Talk[] = [
   },
   {
     title: 'From Plato to Production',
-    event: '[CONFERENCE]',
+    event: 'Rubycon',
     year: '2026',
     blurb:
       'Are you building things, or are you thinking — and code is just the residue? Four philosophers, one Rails controller, an N+1 that was secretly wise, and a twist borrowed from <em>Sophie’s World</em>.',
     color: pastel.sky,
     art: 'temple',
     tilt: 0.9,
+    video: 'https://www.rubyevents.org/talks/from-plato-to-production-a-philosophical-history-of-code',
+    slides: 'https://speakerdeck.com/yaradeb123/from-plato-to-production',
   },
 ];
 
