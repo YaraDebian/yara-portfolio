@@ -26,7 +26,7 @@ const posts = (await getPosts()).slice(0, 3);
   <div class="wrap currently-row">
     <div class="sticky currently wiggle">
       <span class="c-head">currently…</span>
-      {currently.map(([k, v]) => <span>{k}: {k === 'reading' ? <em>{v}</em> : v}</span>)}
+      {currently.map(([k, v]) => <span><span class="c-key">{k}</span>: {k === 'reading' ? <em>{v}</em> : v}</span>)}
     </div>
   </div>
 
@@ -165,6 +165,7 @@ const posts = (await getPosts()).slice(0, 3);
   .currently-row { display: flex; justify-content: flex-end; }
   .currently { width: 100%; max-width: 380px; padding: 26px 28px; background: var(--butter); transform: rotate(2deg); display: flex; flex-direction: column; gap: 6px; }
   .c-head { font-size: 32px; }
+  .c-key { text-decoration: underline; text-decoration-color: var(--rose); text-decoration-thickness: 2px; text-underline-offset: 5px; text-decoration-skip-ink: none; }
 
   .section { padding-top: clamp(80px, 9vw, 130px); padding-bottom: 40px; display: flex; flex-direction: column; gap: 44px; }
   .head { display: flex; flex-direction: column; gap: 10px; }
