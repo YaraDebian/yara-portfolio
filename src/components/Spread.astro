@@ -239,6 +239,7 @@ const tabs = [
       if (s === spread) return;
       top = s > spread ? s - 1 : s;
       spread = s;
+      root.querySelector('.hint')?.classList.add('gone');
       render();
       history.replaceState(null, '', s === 0 ? location.pathname : `#${hashes[s]}`);
     };
@@ -254,7 +255,7 @@ const tabs = [
 
     // The notebook is drawn at a fixed 1360x744 and scaled to the window, so the hand-placed layout never reflows.
     const fit = () => {
-      const s = Math.min((innerWidth - 96) / 1360, (innerHeight - 84) / 744, 1.4);
+      const s = Math.min((innerWidth - 96) / 1360, (innerHeight - 112) / 744, 1.4);
       root.style.setProperty('--s', String(Math.max(s, 0.5)));
     };
     addEventListener('hashchange', () => go(Math.max(0, hashes.indexOf(location.hash.slice(1)))));
@@ -268,7 +269,7 @@ const tabs = [
   .desk {
     --s: 1;
     position: relative; min-height: 100svh; overflow: hidden;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 58px 0 22px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 58px 0 54px;
     background-color: #E6DCCF;
     background-image: radial-gradient(rgba(255,255,255,0.35) 1px, transparent 1.5px), radial-gradient(rgba(120,90,60,0.08) 1px, transparent 1.5px);
     background-size: 7px 7px, 11px 11px;
@@ -386,7 +387,13 @@ const tabs = [
   .tabs button { width: 38px; padding: 0; border: 0; border-radius: 0 12px 12px 0; writing-mode: vertical-rl; color: var(--ink); font: inherit; cursor: pointer; box-shadow: 4px 4px 8px rgba(90,70,40,0.10); transform: translateX(-8px); transition: transform .35s cubic-bezier(.3,1.6,.5,1); }
   .tabs button:hover, .tabs button[aria-current] { transform: translateX(0); }
 
-  .hint { margin: 0; font-size: 18px; color: #7A6E64; }
+  .hint {
+    position: fixed; left: 50%; bottom: 14px; z-index: 400; margin: 0;
+    padding: 6px 18px; border-radius: 999px; background: rgba(251, 247, 240, 0.92); box-shadow: 0 6px 18px rgba(70, 50, 30, 0.18);
+    font-size: 20px; color: var(--ink-soft); white-space: nowrap; pointer-events: none;
+    transform: translateX(-50%); transition: opacity .6s ease, transform .6s ease;
+  }
+  .hint.gone { opacity: 0; transform: translate(-50%, 12px); }
 
   @media (prefers-reduced-motion: reduce) { .leaf, .tabs button, .corner { transition: none; } }
 </style>
