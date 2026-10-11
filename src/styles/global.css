@@ -1,3 +1,9 @@
+@font-face {
+  font-family: 'Hand Fallback';
+  src: local('Comic Sans MS'), local('Chalkboard SE'), local('Marker Felt');
+  size-adjust: 72%;
+}
+
 :root {
   --paper: #fbf7f0;
   --card: #fffdf8;
@@ -19,7 +25,7 @@
   --hl-peach: #f6c0a8;
   --hl-blue: #b9d7f0;
   --hl-green: #c3e3bb;
-  --hand: 'Nanum Pen Script', 'Comic Sans MS', cursive;
+  --hand: 'Nanum Pen Script', 'Hand Fallback', cursive;
   --serif: 'Newsreader', 'Iowan Old Style', Georgia, serif;
   --mono: 'Courier Prime', 'Courier New', monospace;
   --gutter: clamp(16px, 4vw, 48px);

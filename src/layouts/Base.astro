@@ -37,7 +37,9 @@ const tabs = [
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Courier+Prime&display=swap" rel="stylesheet" />
+    <!-- The handwriting font blocks briefly instead of swapping: its fallback is far wider, so a swap reflows every title and marker. -->
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=block" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Courier+Prime&display=swap" rel="stylesheet" />
   </head>
   <body class:list={{ bare }}>
     <svg width="0" height="0" aria-hidden="true" style="position: absolute">
