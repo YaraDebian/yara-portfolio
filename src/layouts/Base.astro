@@ -37,8 +37,8 @@ const tabs = [
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- The handwriting font blocks briefly instead of swapping: its fallback is far wider, so a swap reflows every title and marker. -->
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&display=block" rel="stylesheet" />
+    <!-- Self-hosted Latin subset: Google splits this Korean font into ~90 files that load in waves and reflow every title. -->
+    <link rel="preload" href="/fonts/nanum-pen-script.woff2" as="font" type="font/woff2" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Courier+Prime&display=swap" rel="stylesheet" />
   </head>
   <body class:list={{ bare }}>

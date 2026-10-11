@@ -1,4 +1,10 @@
 @font-face {
+  font-family: 'Nanum Pen Script';
+  src: url('/fonts/nanum-pen-script.woff2') format('woff2');
+  font-display: block;
+}
+
+@font-face {
   font-family: 'Hand Fallback';
   src: local('Comic Sans MS'), local('Chalkboard SE'), local('Marker Felt');
   size-adjust: 72%;
