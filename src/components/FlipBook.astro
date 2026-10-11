@@ -32,8 +32,8 @@ const fan = [
 <div class="flip" data-flip>
   <header class="fb-head hand">
     <a href="/" class="fb-logo">yara's notebook</a>
-    {hasCv ? <a href="/cv-yara-debian.pdf" download class="fb-cv">CV ↓</a> : <span></span>}
     <span class="fb-count" aria-live="polite">p. <span data-pnum>1</span> / 6</span>
+    {hasCv && <a href="/cv-yara-debian.pdf" download class="fb-cv">CV ↓</a>}
   </header>
 
   <div class="pages">
@@ -232,7 +232,7 @@ const fan = [
   .fb-head { position: absolute; top: 0; left: 0; right: 0; height: 64px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; z-index: 40; }
   .fb-logo { font-size: 28px; text-decoration: none; color: var(--ink); }
   .fb-cv { display: inline-flex; align-items: center; min-height: 40px; padding: 0 12px; border: 2px dashed var(--ink); border-radius: 18px 12px 16px 10px; text-decoration: none; color: var(--ink); font-size: 22px; }
-  .fb-count { font-size: 24px; color: var(--ink-soft); }
+  .fb-count { margin-left: auto; font-size: 24px; color: var(--ink-soft); }
 
   .pages { position: absolute; top: 64px; left: 10px; right: 30px; bottom: 76px; perspective: 1800px; }
   .paper-edge { position: absolute; }
