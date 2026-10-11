@@ -1,0 +1,61 @@
+---
+import type { Talk } from '../data/site';
+
+interface Props { talk: Talk; tilt?: number; compact?: boolean }
+const { talk, tilt = 0, compact = false } = Astro.props;
+---
+<article class:list={['ticket', { compact }]} style={`background: ${talk.color}; transform: rotate(${tilt}deg)`}>
+  <div class="stub">
+    <span class="admit">Admit one</span>
+    <span class="hand event">{talk.event} · {talk.year}</span>
+  </div>
+  <div class="body">
+    {compact && (
+      talk.art === 'palette' ? (
+        <svg viewBox="0 0 160 120" width="88" height="66" aria-hidden="true">
+          <path d="M20 70 C 10 30, 60 6, 100 14 C 140 22, 156 56, 136 80 C 126 92, 110 82, 100 92 C 88 104, 98 116, 70 114 C 38 112, 26 96, 20 70 Z" fill="#FFFDF8" stroke="#2A2433" stroke-width="3" />
+          <circle cx="52" cy="48" r="11" fill="#F4B49A" filter="url(#yd-pastel)" />
+          <circle cx="86" cy="36" r="11" fill="#9EC5E8" filter="url(#yd-pastel)" />
+          <circle cx="118" cy="52" r="11" fill="#F2D66B" filter="url(#yd-pastel)" />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 160 120" width="88" height="66" aria-hidden="true">
+          <circle cx="112" cy="26" r="9" fill="none" stroke="#2A2433" stroke-width="2.5" />
+          <circle cx="128" cy="12" r="5" fill="none" stroke="#2A2433" stroke-width="2.5" />
+          <path d="M30 34 H 96 M36 34 V 104 M50 34 V 104 M64 34 V 104 M78 34 V 104 M90 34 V 104 M24 104 H 102 M24 112 H 102" fill="none" stroke="#2A2433" stroke-width="3" stroke-linecap="round" />
+          <path d="M26 30 C 40 20, 86 20, 100 30" fill="none" stroke="#F4B49A" stroke-width="10" stroke-linecap="round" filter="url(#yd-pastel)" />
+        </svg>
+      )
+    )}
+    <h3 class="hand">{talk.title}</h3>
+    <p set:html={talk.blurb} />
+    {(talk.video || talk.slides || talk.summary) && (
+      <div class="hand links">
+        {talk.video && <a href={talk.video} target="_blank" rel="noopener">watch ↗</a>}
+        {talk.slides && <a href={talk.slides} target="_blank" rel="noopener">slides ↗</a>}
+        {talk.summary && <a href={talk.summary} target="_blank" rel="noopener">summary ↗</a>}
+      </div>
+    )}
+  </div>
+</article>
+
+<style>
+  .ticket { display: flex; flex-direction: column; border-radius: 6px; box-shadow: 0 12px 26px rgba(90,70,40,0.12); overflow: hidden; }
+  .stub { padding: 16px 24px; border-bottom: 3px dashed var(--paper); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .admit { font-family: var(--mono); font-size: 12px; letter-spacing: 0.2em; text-transform: uppercase; }
+  .event { font-size: 26px; text-align: right; }
+  .body { padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+  .body svg { overflow: visible; }
+  h3 { margin: 0; font-weight: 400; font-size: 46px; line-height: 0.9; }
+  p { margin: 0; font-size: 17px; line-height: 1.55; font-weight: 300; }
+  .links { display: flex; flex-wrap: wrap; gap: 0 24px; font-size: 26px; }
+  .links a { display: inline-flex; align-items: center; min-height: 44px; }
+  .compact .stub { padding: 14px 18px; }
+  .compact .event { font-size: 22px; }
+  .compact .body { padding: 16px 18px; gap: 10px; }
+  .compact { overflow: hidden; }
+  .compact .body svg { width: 64px; height: 48px; flex: none; }
+  .compact h3 { font-size: 32px; }
+  .compact p { font-size: 15px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+  .compact .links { font-size: 23px; margin-top: auto; }
+</style>

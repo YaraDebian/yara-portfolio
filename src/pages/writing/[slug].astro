@@ -68,7 +68,27 @@ const stickies = ['var(--butter)', 'var(--mint)', 'var(--lilac)', 'var(--sky)'];
   </article>
 </Base>
 
+<script>
+  // Phones have no room for a margin, so each note is tucked between paragraphs at an even spacing instead.
+  const notes = [...document.querySelectorAll<HTMLElement>('.margin > *')];
+  const paras = [...document.querySelectorAll<HTMLElement>('.prose > p')];
+  notes.forEach((note, i) => {
+    const anchor = paras[Math.min(paras.length - 1, Math.round(((i + 1) * paras.length) / (notes.length + 1)))];
+    if (!anchor) return;
+    const copy = note.cloneNode(true) as HTMLElement;
+    copy.classList.add('inline-note');
+    anchor.after(copy);
+  });
+</script>
+
 <style>
+  .prose :global(.inline-note) { display: none; }
+  @media (max-width: 860px) {
+    .margin { display: none; }
+    .prose :global(.inline-note) { display: block; margin: 8px 18px 30px 30px; }
+    .prose :global(.inline-note.sticky) { font-size: 23px; }
+    .prose :global(.inline-note.pen) { margin-left: auto; max-width: 260px; text-align: right; }
+  }
   .head { padding-top: clamp(40px, 6vw, 88px); padding-bottom: 48px; display: flex; flex-direction: column; gap: 22px; }
   .meta { margin: 0; font-size: 28px; color: var(--rose); transform: rotate(-1.5deg); align-self: flex-start; }
   .title { margin: 0; max-width: 24ch; font-size: clamp(50px, 7.5vw, 124px); line-height: 0.85; text-wrap: balance; }

@@ -1,0 +1,304 @@
+---
+import { existsSync } from 'node:fs';
+import ClayBlob from './ClayBlob.astro';
+import Mark from './Mark.astro';
+import Ticket from './Ticket.astro';
+import type { Post } from '../lib';
+import { profile, chapters, talks, made } from '../data/site';
+
+interface Props { posts: Post[] }
+const { posts } = Astro.props;
+const hasCv = existsSync('public/cv-yara-debian.pdf');
+const tabs = [
+  { label: 'me', h: 74, bg: 'var(--peach)' },
+  { label: 'journey', h: 90, bg: 'var(--lilac)' },
+  { label: 'talks', h: 74, bg: 'var(--sky)' },
+  { label: 'clay', h: 74, bg: '#F4C6B0' },
+  { label: 'writing', h: 84, bg: 'var(--mint)' },
+  { label: 'say hi', h: 74, bg: 'var(--butter)' },
+];
+const stack = [
+  'translate(0px, 0px) rotate(-1deg)',
+  'translate(7px, 12px) rotate(2.5deg)',
+  'translate(-6px, 22px) rotate(-3deg)',
+  'translate(4px, 30px) rotate(1.5deg)',
+];
+const fan = [
+  'translate(0px, 0px) rotate(-2deg) scale(1)',
+  'translate(62px, 18px) rotate(10deg) scale(0.92)',
+  'translate(-62px, 22px) rotate(-12deg) scale(0.92)',
+];
+---
+<div class="flip" data-flip>
+  <header class="fb-head hand">
+    <a href="/" class="fb-logo">yara's notebook</a>
+    {hasCv ? <a href="/cv-yara-debian.pdf" download class="fb-cv">CV ↓</a> : <span></span>}
+    <span class="fb-count" aria-live="polite">p. <span data-pnum>1</span> / 6</span>
+  </header>
+
+  <div class="pages">
+    <div class="paper-edge e1" aria-hidden="true"></div>
+    <div class="paper-edge e2" aria-hidden="true"></div>
+
+    <section class="page" data-page="0" aria-label="Page 1, about">
+      <p class="hand date" data-today>page 1</p>
+      <h1 class="hand hi">Hi, I'm <Mark color="#CDB4EC" variant="wave">Yara.</Mark></h1>
+      <p class="intro">An <span class="hl" style="--hl: var(--hl-peach)">AI engineer</span> who still thinks in Ruby, asks slightly-too-big questions on stage, and squishes <span class="hl" style="--hl: var(--hl-purple)">air-dry clay</span> on weekends.</p>
+      <div class="blob-wrap"><ClayBlob size={250} caption={false} /></div>
+      <p class="hand foot-note">swipe to turn the page →</p>
+    </section>
+
+    <section class="page" data-page="1" aria-label="Page 2, journey">
+      <p class="hand label">page 2</p>
+      <h2 class="hand h">how I got here</h2>
+      <p class="intro small">I didn't start coding out of passion. I made logic appeal to a dreamy mind: first art, then philosophy, now AI.</p>
+      <div class="pile" data-pile="chapters">
+        {chapters.map((c, i) => (
+          <button type="button" class:list={['card', { current: c.current }]} data-card={i} aria-label="Show next chapter" style={`transform: ${stack[i]}; z-index: ${4 - i}`}>
+            <span class="tape" style={`background: ${c.tape}; left: 34%`} aria-hidden="true"></span>
+            <span class="hand ch-label">{c.label}</span>
+            <span class="hand ch-title">{c.title}</span>
+            <span class="ch-body" set:html={c.body} />
+          </button>
+        ))}
+      </div>
+      <p class="hand foot-row"><span>tap the note to flick →</span><span><span data-count="chapters">1</span> / {chapters.length}</span></p>
+    </section>
+
+    <section class="page" data-page="2" aria-label="Page 3, talks">
+      <p class="hand label">page 3</p>
+      <h2 class="hand h">things I said on stage</h2>
+      <div class="pile tickets" data-pile="talks">
+        {talks.map((t, i) => (
+          <div class="ticket-slot" data-card={i} style={`transform: ${i === 0 ? 'translate(0px, 0px) rotate(-1deg)' : 'translate(8px, 16px) rotate(2.5deg)'}; z-index: ${talks.length - i}`}>
+            <Ticket talk={t} compact />
+          </div>
+        ))}
+      </div>
+      <div class="hand foot-row">
+        <span><span data-count="talks">1</span> / {talks.length}</span>
+        <button type="button" class="next-ticket" data-next-in="talks">next ticket →</button>
+      </div>
+    </section>
+
+    <section class="page" data-page="3" aria-label="Page 4, clay and pastel">
+      <p class="hand label">page 4</p>
+      <h2 class="hand h">made with my hands</h2>
+      <p class="intro small">Air-dry clay and oil pastels: where I go when the code needs to rest.</p>
+      <div class="pile photos" data-pile="photos">
+        {made.map((m, i) => (
+          <button type="button" class="photo" data-card={i} aria-label={`Bring ${m.title} to the front`} style={`transform: ${fan[i % 3]}; z-index: ${3 - i}`}>
+            {m.src ? <img src={m.src} alt="" loading="lazy" /> : <span class="ph" style={`background: ${m.color}`}>[PHOTO]</span>}
+            <span class="hand cap">{m.title} · {m.medium}</span>
+          </button>
+        ))}
+      </div>
+      <p class="hand foot-note">tap a polaroid to pull it out of the pile</p>
+    </section>
+
+    <section class="page" data-page="4" aria-label="Page 5, writing">
+      <p class="hand label">page 5</p>
+      <h2 class="hand h">notes &amp; essays</h2>
+      <ol class="entries">
+        {posts.slice(0, 3).map((p, i) => (
+          <li>
+            <a href={`/writing/${p.id}`}>
+              <span class="hand e-meta">{String(posts.length - i).padStart(2, '0')}{p.data.tags[0] && ` · ${p.data.tags[0]}`}{i === 0 && ' · new!'}</span>
+              <span class="e-title">{p.data.title}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+      <a href="/writing" class="hand all-tab">all entries →</a>
+    </section>
+
+    <section class="page" data-page="5" aria-label="Page 6, say hi">
+      <p class="hand label">last page</p>
+      <h2 class="hand h">leave me a note</h2>
+      <p class="intro small">About a talk, an AI project, clay tips, or a question you can't stop thinking about.</p>
+      <div class="lined hand">
+        <span class="tape" style="background: rgba(246,229,166,0.9); left: 50%; width: 90px; height: 24px; transform: translateX(-50%) rotate(4deg)" aria-hidden="true"></span>
+        <p>who are you?</p>
+        <p>where does the code come from?</p>
+      </div>
+      <a href={`mailto:${profile.email}`} class="btn-ink write">write to me ✎</a>
+      <nav aria-label="Elsewhere" class="hand elsewhere">
+        {profile.links.map((l) => <a href={l.href} target="_blank" rel="noopener">{l.label}</a>)}
+      </nav>
+    </section>
+  </div>
+
+  <nav class="fb-tabs hand" aria-label="Notebook tabs">
+    {tabs.map((t, i) => <button type="button" data-go={i} style={`height: ${t.h}px; background: ${t.bg}`}>{t.label}</button>)}
+  </nav>
+
+  <footer class="fb-foot">
+    <button type="button" class="round" data-prev aria-label="Previous page">←</button>
+    <div class="dots" aria-hidden="true">{tabs.map(() => <span></span>)}</div>
+    <button type="button" class="btn-ink turn" data-next>turn →</button>
+  </footer>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-flip]');
+  if (root) {
+    const pages = [...root.querySelectorAll<HTMLElement>('[data-page]')];
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('.fb-tabs [data-go]')];
+    const dots = [...root.querySelectorAll<HTMLElement>('.dots span')];
+    const prev = root.querySelector<HTMLButtonElement>('[data-prev]')!;
+    const next = root.querySelector<HTMLButtonElement>('[data-next]')!;
+    const pnum = root.querySelector('[data-pnum]')!;
+    const hashes = ['me', 'journey', 'talks', 'made', 'writing', 'hi'];
+    let page = Math.max(0, hashes.indexOf(location.hash.slice(1)));
+
+    const render = () => {
+      pages.forEach((p, i) => {
+        const turned = i < page, cur = i === page;
+        p.style.transform = turned ? 'rotateY(-110deg)' : 'rotateY(0deg)';
+        p.style.zIndex = String(turned ? 20 + i : cur ? 10 : 10 - (i - page));
+        p.style.boxShadow = turned ? '-30px 0 40px rgba(60,40,20,0.25)' : cur ? '0 8px 20px rgba(90,70,40,0.14)' : 'none';
+        p.toggleAttribute('inert', !cur);
+      });
+      tabs.forEach((t, i) => t.toggleAttribute('aria-current', i === page));
+      dots.forEach((d, i) => d.classList.toggle('on', i === page));
+      pnum.textContent = String(page + 1);
+      prev.disabled = page === 0;
+      next.disabled = page === pages.length - 1;
+    };
+
+    const go = (p: number) => {
+      p = Math.max(0, Math.min(pages.length - 1, p));
+      if (p === page) return;
+      page = p;
+      render();
+      history.replaceState(null, '', p === 0 ? location.pathname : `#${hashes[p]}`);
+    };
+
+    tabs.forEach((t) => t.addEventListener('click', () => go(Number(t.dataset.go))));
+    prev.addEventListener('click', () => go(page - 1));
+    next.addEventListener('click', () => go(page + 1));
+
+    let start: { x: number; y: number } | null = null;
+    root.addEventListener('pointerdown', (e) => { start = { x: e.clientX, y: e.clientY }; });
+    root.addEventListener('pointerup', (e) => {
+      if (!start) return;
+      const dx = e.clientX - start.x, dy = e.clientY - start.y;
+      start = null;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(page + (dx < 0 ? 1 : -1));
+    });
+
+    const piles: Record<string, string[]> = {
+      chapters: ['translate(0px, 0px) rotate(-1deg)', 'translate(7px, 12px) rotate(2.5deg)', 'translate(-6px, 22px) rotate(-3deg)', 'translate(4px, 30px) rotate(1.5deg)'],
+      talks: ['translate(0px, 0px) rotate(-1deg)', 'translate(8px, 16px) rotate(2.5deg)', 'translate(-6px, 26px) rotate(-2deg)'],
+      photos: ['translate(0px, 0px) rotate(-2deg) scale(1)', 'translate(62px, 18px) rotate(10deg) scale(0.92)', 'translate(-62px, 22px) rotate(-12deg) scale(0.92)'],
+    };
+    root.querySelectorAll<HTMLElement>('[data-pile]').forEach((pile) => {
+      const name = pile.dataset.pile!;
+      const cards = [...pile.querySelectorAll<HTMLElement>('[data-card]')];
+      const count = root.querySelector(`[data-count="${name}"]`);
+      const slots = piles[name];
+      let front = 0;
+      const layout = () => {
+        cards.forEach((c, i) => {
+          const pos = (i - front + cards.length) % cards.length;
+          c.style.transform = slots[pos % slots.length];
+          c.style.zIndex = String(cards.length - pos);
+          c.toggleAttribute('inert', pos !== 0 && name !== 'photos');
+        });
+        if (count) count.textContent = String(front + 1);
+      };
+      const advance = () => { front = (front + 1) % cards.length; layout(); };
+      if (name === 'photos') cards.forEach((c, i) => c.addEventListener('click', () => { front = i; layout(); }));
+      else if (name === 'chapters') cards.forEach((c) => c.addEventListener('click', advance));
+      root.querySelector(`[data-next-in="${name}"]`)?.addEventListener('click', advance);
+      layout();
+    });
+
+    // Designed for a 390px-wide phone; scale up a little on bigger screens instead of stretching the layout.
+    const fit = () => root.style.setProperty('--k', String(Math.min(Math.max(innerWidth / 390, 0.85), 1.25)));
+    addEventListener('hashchange', () => go(Math.max(0, hashes.indexOf(location.hash.slice(1)))));
+    addEventListener('resize', fit);
+    fit();
+    render();
+  }
+</script>
+
+<style>
+  .flip {
+    --k: 1;
+    position: relative; height: 100svh; overflow: hidden; touch-action: pan-y; user-select: none; -webkit-user-select: none;
+    background: #EDE6DA;
+  }
+  .fb-head { position: absolute; top: 0; left: 0; right: 0; height: 64px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; z-index: 40; }
+  .fb-logo { font-size: 28px; text-decoration: none; color: var(--ink); }
+  .fb-cv { display: inline-flex; align-items: center; min-height: 40px; padding: 0 12px; border: 2px dashed var(--ink); border-radius: 18px 12px 16px 10px; text-decoration: none; color: var(--ink); font-size: 22px; }
+  .fb-count { font-size: 24px; color: var(--ink-soft); }
+
+  .pages { position: absolute; top: 64px; left: 10px; right: 30px; bottom: 76px; perspective: 1800px; }
+  .paper-edge { position: absolute; }
+  .e1 { inset: 6px -4px -6px 4px; background: #F6F0E6; box-shadow: 0 6px 14px rgba(90,70,40,0.12); }
+  .e2 { inset: 3px -2px -3px 2px; background: #F9F4EC; }
+  .page {
+    position: absolute; inset: 0; box-sizing: border-box; overflow: hidden;
+    transform-origin: left center; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    transition: transform .75s cubic-bezier(.45,.05,.25,1), box-shadow .75s ease;
+    background-color: var(--paper); background-image: radial-gradient(var(--dots) 1.1px, transparent 1.4px); background-size: 22px 22px;
+    padding: 20px 24px 18px 20px; display: flex; flex-direction: column; gap: 10px;
+    font-size: calc(16px * var(--k));
+  }
+  .date, .label { margin: 0; font-size: 22px; color: var(--ink-soft); }
+  .date { transform: rotate(-2deg); align-self: flex-start; }
+  .hi { margin: 0; font-weight: 400; font-size: calc(72px * var(--k)); line-height: 0.8; }
+  .hi :global(.mark svg) { left: -4%; width: 108%; bottom: -10px; height: 26px; }
+  .h { margin: 0; font-weight: 400; font-size: calc(52px * var(--k)); line-height: 0.85; }
+  .intro { margin: 6px 0 0; font-size: calc(18px * var(--k)); line-height: 1.45; font-weight: 300; }
+  .intro.small { margin: 0; font-size: calc(16px * var(--k)); }
+  .blob-wrap { flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; }
+  .blob-wrap :global(.clay) { width: min(250px * var(--k), 100%); }
+  .blob-wrap :global(.stage) { width: 100%; max-height: 100%; }
+  .foot-note { margin: auto 0 0; align-self: flex-end; font-size: 23px; color: var(--pen); transform: rotate(-2deg); }
+  .foot-row { margin: auto 0 0; display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 23px; color: var(--pen); }
+
+  .pile { position: relative; flex: 1 1 auto; min-height: 0; margin-top: 12px; }
+  .card, .ticket-slot, .photo { position: absolute; transition: transform .45s cubic-bezier(.3,1.4,.5,1); }
+  .card { left: 8px; right: 14px; top: 0; height: min(250px, calc(100% - 34px)); padding: 30px 20px 18px; border: 0; text-align: left; cursor: pointer; background: var(--card); box-shadow: 0 8px 18px rgba(90,70,40,0.12); display: flex; flex-direction: column; gap: 8px; color: var(--ink); font: inherit; }
+  .card.current { background: var(--peach); }
+  .ch-label { font-size: 22px; color: var(--rose); }
+  .current .ch-label { color: var(--rose-deep); }
+  .ch-title { font-size: calc(36px * var(--k)); line-height: 0.95; }
+  .ch-body { font-family: var(--serif); font-size: 15px; line-height: 1.5; font-weight: 300; }
+  .ticket-slot { left: 4px; right: 10px; top: 0; height: calc(100% - 30px); display: flex; }
+  .ticket-slot > :global(.ticket) { flex: 1; }
+  .next-ticket { min-height: 44px; padding: 0 16px; border: 0; border-radius: 22px 16px 20px 14px; background: var(--ink); color: var(--paper); font: inherit; font-size: 23px; cursor: pointer; }
+  .photos { display: flex; justify-content: center; }
+  .photo { left: 50%; top: 10px; width: min(210px, 70%); margin-left: calc(min(210px, 70%) / -2); padding: 12px 12px 14px; border: 0; background: #fff; box-shadow: 0 10px 22px rgba(90,70,40,0.16); display: flex; flex-direction: column; gap: 10px; cursor: pointer; }
+  .photo img, .photo .ph { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 12px; }
+  .photo .cap { align-self: center; font-size: 20px; color: var(--ink); }
+
+  .entries { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  .entries a { display: flex; flex-direction: column; gap: 2px; min-height: 60px; padding: 10px 0; border-bottom: 2px dotted var(--leader); text-decoration: none; color: var(--ink); }
+  .e-meta { font-size: 21px; color: var(--rose); }
+  .e-title { font-size: calc(19px * var(--k)); line-height: 1.25; }
+  .all-tab { margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; background: var(--mint); border-radius: 14px 14px 4px 4px; text-decoration: none; color: var(--ink); font-size: 26px; }
+
+  .lined { position: relative; margin: 18px 10px 4px; padding: 30px 20px 18px; background: var(--card) repeating-linear-gradient(transparent 0 33px, var(--sky) 33px 35px); transform: rotate(-3deg); box-shadow: 0 12px 24px rgba(90,70,40,0.16); font-size: 28px; line-height: 35px; color: var(--pen); }
+  .lined p { margin: 0; }
+  .lined .tape { top: -12px; }
+  .write { align-self: flex-start; min-height: 50px; font-size: 27px; transform: rotate(1.5deg); }
+  .elsewhere { margin-top: auto; display: flex; flex-wrap: wrap; gap: 0 18px; font-size: 24px; }
+  .elsewhere a { display: inline-flex; align-items: center; min-height: 44px; }
+
+  .fb-tabs { position: absolute; top: 92px; right: 0; z-index: 50; display: flex; flex-direction: column; gap: 4px; font-size: 19px; }
+  .fb-tabs button { width: 40px; padding: 0; border: 0; border-radius: 10px 0 0 10px; color: var(--ink); writing-mode: vertical-rl; font: inherit; cursor: pointer; transition: transform .35s cubic-bezier(.3,1.4,.5,1); }
+  .fb-tabs button[aria-current] { transform: translateX(-8px); }
+
+  .fb-foot { position: absolute; left: 0; right: 0; bottom: 0; height: 76px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; z-index: 40; }
+  .round { width: 52px; height: 52px; border: 2px solid var(--ink); border-radius: 50%; background: transparent; color: var(--ink); font-size: 22px; cursor: pointer; }
+  .round:disabled, .turn:disabled { opacity: 0.3; cursor: default; }
+  .turn { border: 0; min-height: 52px; font-size: 26px; cursor: pointer; }
+  .dots { display: flex; gap: 8px; }
+  .dots span { width: 9px; height: 9px; border-radius: 50%; background: #CFC4DA; }
+  .dots span.on { background: var(--ink); }
+
+  @media (prefers-reduced-motion: reduce) { .page, .card, .ticket-slot, .photo, .fb-tabs button { transition: none; } }
+</style>

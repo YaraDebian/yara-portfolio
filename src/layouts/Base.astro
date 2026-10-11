@@ -7,8 +7,9 @@ interface Props {
   description?: string;
   image?: string;
   back?: { href: string; label: string };
+  bare?: boolean;
 }
-const { title, description = profile.description, image, back } = Astro.props;
+const { title, description = profile.description, image, back, bare = false } = Astro.props;
 const fullTitle = title ? `${title} · ${profile.name}` : `${profile.name} · ${profile.role}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const tabs = [
@@ -38,7 +39,7 @@ const tabs = [
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=Courier+Prime&display=swap" rel="stylesheet" />
   </head>
-  <body>
+  <body class:list={{ bare }}>
     <svg width="0" height="0" aria-hidden="true" style="position: absolute">
       <defs>
         <filter id="yd-pastel" x="-10%" y="-40%" width="120%" height="180%">
@@ -48,9 +49,22 @@ const tabs = [
           <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.4 1.7" result="holes" />
           <feComposite in="wobbly" in2="holes" operator="in" />
         </filter>
+        <!-- Shared by every clay blob; must live outside any display:none layout or the blob renders invisible. -->
+          <filter id="yd-clay" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="3" seed="4" result="noise" />
+            <feDiffuseLighting in="noise" lighting-color="#ffffff" surfaceScale="1.4" result="lit"><feDistantLight azimuth="235" elevation="55" /></feDiffuseLighting>
+            <feComposite in="lit" in2="SourceGraphic" operator="in" result="tex" />
+            <feBlend in="SourceGraphic" in2="tex" mode="multiply" />
+          </filter>
+          <radialGradient id="yd-clay-fill" cx="38%" cy="30%" r="75%">
+            <stop offset="0" stop-color="#FFEBDD" />
+            <stop offset="0.45" stop-color="#F6C3AA" />
+            <stop offset="1" stop-color="#D7A6CC" />
+          </radialGradient>
       </defs>
     </svg>
 
+    {!bare && (
     <header class="wrap top">
       <a href="/" class="logo hand">
         yara's notebook
@@ -64,11 +78,13 @@ const tabs = [
         </nav>
       )}
     </header>
+    )}
 
     <main>
       <slot />
     </main>
 
+    {!bare && (
     <footer class="wrap bottom hand">
       <span>this notebook belongs to {profile.name} · if found, return to {profile.city}</span>
       <nav aria-label="Elsewhere">
@@ -76,6 +92,7 @@ const tabs = [
         <a href="/rss.xml">rss</a>
       </nav>
     </footer>
+    )}
 
     <script>
       const io = new IntersectionObserver(

@@ -1,22 +1,11 @@
 ---
+interface Props { size?: number; caption?: boolean }
+const { size = 400, caption = true } = Astro.props;
 ---
-<figure class="clay">
-  <div class="tape-label hand" aria-hidden="true">poke me!</div>
+<figure class="clay" style={`--size: ${size}px`}>
   <div class="stage" data-clay>
+    <div class="tape-label hand" aria-hidden="true">poke me!</div>
     <svg viewBox="-250 -250 500 500" role="img" aria-label="A soft, squishy digital clay sculpture with a little face. It wobbles when poked.">
-      <defs>
-        <filter id="yd-clay" x="-20%" y="-20%" width="140%" height="140%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="3" seed="4" result="noise" />
-          <feDiffuseLighting in="noise" lighting-color="#ffffff" surfaceScale="1.4" result="lit"><feDistantLight azimuth="235" elevation="55" /></feDiffuseLighting>
-          <feComposite in="lit" in2="SourceGraphic" operator="in" result="tex" />
-          <feBlend in="SourceGraphic" in2="tex" mode="multiply" />
-        </filter>
-        <radialGradient id="yd-clay-fill" cx="38%" cy="30%" r="75%">
-          <stop offset="0" stop-color="#FFEBDD" />
-          <stop offset="0.45" stop-color="#F6C3AA" />
-          <stop offset="1" stop-color="#D7A6CC" />
-        </radialGradient>
-      </defs>
       <ellipse data-shadow cx="0" cy="205" rx="150" ry="18" fill="#D9CDE3" opacity="0.8" />
       <path data-blob fill="url(#yd-clay-fill)" filter="url(#yd-clay)" />
       <ellipse data-cheek-l rx="22" ry="12" fill="#F29BB0" opacity="0.45" />
@@ -32,30 +21,21 @@
       </g>
     </svg>
   </div>
-  <figcaption class="hand">
-    <span class="cap">I sculpt with real clay too. this one's digital.</span>
-    <span class="soft">poked <span data-pokes>0</span> times so far</span>
-  </figcaption>
+  {caption && (
+    <figcaption class="hand">
+      <span class="cap">I sculpt with real clay too. this one's digital.</span>
+      <span class="soft">poked <span data-pokes>0</span> times so far</span>
+    </figcaption>
+  )}
 </figure>
 
 <script>
   const N = 44, R = 150;
-  const stage = document.querySelector<HTMLElement>('[data-clay]')!;
-  const $ = <T extends Element>(s: string) => stage.querySelector<T>(`[data-${s}]`)!;
-  const blob = $('blob'), shadow = $('shadow'), open = $('open'), squintG = $('squint');
-  const eyeL = $('eye-l'), eyeR = $('eye-r'), mouth = $('mouth'), cheekL = $('cheek-l'), cheekR = $('cheek-r');
-  const squintPath = $('squint-path'), mouthO = $('mouth-o');
-  const pokesEl = document.querySelector('[data-pokes]')!;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  const off = new Array(N).fill(0), vel = new Array(N).fill(0);
-  let look = [0, 0], pressed = false, last = 0, pokes = 0, squintUntil = -1;
+  let pokes = 0;
   try { pokes = parseInt(localStorage.getItem('clay-pokes') ?? '0') || 0; } catch {}
-  pokesEl.textContent = String(pokes);
-
-  const set = (el: Element, attrs: Record<string, string | number>) => {
-    for (const k in attrs) el.setAttribute(k, String(attrs[k]));
-  };
+  const showPokes = () => document.querySelectorAll('[data-pokes]').forEach((el) => (el.textContent = String(pokes)));
+  showPokes();
 
   const smooth = (P: number[][]) => {
     const n = P.length;
@@ -67,89 +47,103 @@
     return d + ' Z';
   };
 
-  const local = (e: PointerEvent) => {
-    const r = stage.getBoundingClientRect();
-    return [((e.clientX - r.left) / r.width) * 500 - 250, ((e.clientY - r.top) / r.height) * 500 - 250];
+  const set = (el: Element, attrs: Record<string, string | number>) => {
+    for (const k in attrs) el.setAttribute(k, String(attrs[k]));
   };
 
-  const poke = (x: number, y: number, power: number) => {
-    const ang = Math.atan2(y, x), inside = Math.max(0, 1 - Math.abs(Math.hypot(x, y) - R) / 160);
-    for (let i = 0; i < N; i++) {
-      const a = (i / N) * Math.PI * 2, da = Math.atan2(Math.sin(a - ang), Math.cos(a - ang));
-      vel[i] -= power * (0.35 + inside) * Math.exp(-(da * da) / 0.18);
-    }
-  };
+  document.querySelectorAll<HTMLElement>('[data-clay]').forEach((stage) => {
+    const $ = (s: string) => stage.querySelector(`[data-${s}]`)!;
+    const blob = $('blob'), shadow = $('shadow'), open = $('open'), squintG = $('squint');
+    const eyeL = $('eye-l'), eyeR = $('eye-r'), mouth = $('mouth'), cheekL = $('cheek-l'), cheekR = $('cheek-r');
+    const squintPath = $('squint-path'), mouthO = $('mouth-o');
+    const off = new Array(N).fill(0), vel = new Array(N).fill(0);
+    let look = [0, 0], pressed = false, last = 0, squintUntil = -1, visible = false;
 
-  const render = (t: number) => {
-    const P = [];
-    for (let i = 0; i < N; i++) {
-      const a = (i / N) * Math.PI * 2;
-      const r = R * (1 + 0.035 * Math.sin(3 * a + t * 0.9) + 0.025 * Math.sin(5 * a - t * 1.3)) + off[i];
-      P.push([Math.cos(a) * r * 1.08, Math.sin(a) * r * 0.96 + 20]);
-    }
-    const [lx, ly] = look, ll = Math.hypot(lx, ly) || 1, k = Math.min(1, ll / 200) * 9;
-    const ex = (lx / ll) * k, ey = (ly / ll) * k;
-    const squint = squintUntil > last / 1000;
-    const blink = !reduce && t % 4.2 < 0.13;
-    const fy = 6 + off[Math.round(N * 0.75)] * 0.3;
+    const local = (e: PointerEvent) => {
+      const r = stage.getBoundingClientRect();
+      return [((e.clientX - r.left) / r.width) * 500 - 250, ((e.clientY - r.top) / r.height) * 500 - 250];
+    };
 
-    blob.setAttribute('d', smooth(P));
-    shadow.setAttribute('rx', String(Math.round(150 + Math.sin(t * 0.9) * 4)));
-    set(eyeL, { cx: (-42 + ex).toFixed(1), cy: (fy + ey).toFixed(1), ry: blink ? 1.5 : 12 });
-    set(eyeR, { cx: (42 + ex).toFixed(1), cy: (fy + ey).toFixed(1), ry: blink ? 1.5 : 12 });
-    set(cheekL, { cx: -74, cy: (fy + 26).toFixed(1) });
-    set(cheekR, { cx: 74, cy: (fy + 26).toFixed(1) });
-    mouth.setAttribute('d', `M${-14 + ex} ${fy + 34 + ey} Q ${ex} ${fy + 48 + ey} ${14 + ex} ${fy + 34 + ey}`);
-    squintPath.setAttribute('d', `M-54 ${fy - 10} L-34 ${fy} L-54 ${fy + 10} M54 ${fy - 10} L34 ${fy} L54 ${fy + 10}`);
-    mouthO.setAttribute('cy', (fy + 40).toFixed(1));
-    open.setAttribute('opacity', squint ? '0' : '1');
-    squintG.setAttribute('opacity', squint ? '1' : '0');
-  };
+    const poke = (x: number, y: number, power: number) => {
+      const ang = Math.atan2(y, x), inside = Math.max(0, 1 - Math.abs(Math.hypot(x, y) - R) / 160);
+      for (let i = 0; i < N; i++) {
+        const a = (i / N) * Math.PI * 2, da = Math.atan2(Math.sin(a - ang), Math.cos(a - ang));
+        vel[i] -= power * (0.35 + inside) * Math.exp(-(da * da) / 0.18);
+      }
+    };
 
-  let visible = true;
-  new IntersectionObserver(([e]) => (visible = e.isIntersecting)).observe(stage);
+    const render = (t: number) => {
+      const P = [];
+      for (let i = 0; i < N; i++) {
+        const a = (i / N) * Math.PI * 2;
+        const r = R * (1 + 0.035 * Math.sin(3 * a + t * 0.9) + 0.025 * Math.sin(5 * a - t * 1.3)) + off[i];
+        P.push([Math.cos(a) * r * 1.08, Math.sin(a) * r * 0.96 + 20]);
+      }
+      const [lx, ly] = look, ll = Math.hypot(lx, ly) || 1, k = Math.min(1, ll / 200) * 9;
+      const ex = (lx / ll) * k, ey = (ly / ll) * k;
+      const squint = squintUntil > last / 1000;
+      const blink = !reduce && t % 4.2 < 0.13;
+      const fy = 6 + off[Math.round(N * 0.75)] * 0.3;
+      blob.setAttribute('d', smooth(P));
+      shadow.setAttribute('rx', String(Math.round(150 + Math.sin(t * 0.9) * 4)));
+      set(eyeL, { cx: (-42 + ex).toFixed(1), cy: (fy + ey).toFixed(1), ry: blink ? 1.5 : 12 });
+      set(eyeR, { cx: (42 + ex).toFixed(1), cy: (fy + ey).toFixed(1), ry: blink ? 1.5 : 12 });
+      set(cheekL, { cx: -74, cy: (fy + 26).toFixed(1) });
+      set(cheekR, { cx: 74, cy: (fy + 26).toFixed(1) });
+      mouth.setAttribute('d', `M${-14 + ex} ${fy + 34 + ey} Q ${ex} ${fy + 48 + ey} ${14 + ex} ${fy + 34 + ey}`);
+      squintPath.setAttribute('d', `M-54 ${fy - 10} L-34 ${fy} L-54 ${fy + 10} M54 ${fy - 10} L34 ${fy} L54 ${fy + 10}`);
+      mouthO.setAttribute('cy', (fy + 40).toFixed(1));
+      open.setAttribute('opacity', squint ? '0' : '1');
+      squintG.setAttribute('opacity', squint ? '1' : '0');
+    };
 
-  const tick = (now: number) => {
+    new IntersectionObserver(([e]) => (visible = e.isIntersecting)).observe(stage);
+    render(0);
+
+    const tick = (now: number) => {
+      requestAnimationFrame(tick);
+      const dt = last ? Math.min(0.04, (now - last) / 1000) : 0.016;
+      last = now;
+      if (!visible) return;
+      for (let i = 0; i < N; i++) {
+        const a = -260 * off[i] - 9 * vel[i];
+        const nb = (off[(i + 1) % N] + off[(i - 1 + N) % N]) / 2 - off[i];
+        vel[i] += (a + 140 * nb) * dt;
+        off[i] += vel[i] * dt;
+      }
+      render(reduce ? 0 : now / 1000);
+    };
     requestAnimationFrame(tick);
-    const dt = last ? Math.min(0.04, (now - last) / 1000) : 0.016;
-    last = now;
-    if (!visible) return;
-    for (let i = 0; i < N; i++) {
-      const a = -260 * off[i] - 9 * vel[i];
-      const nb = (off[(i + 1) % N] + off[(i - 1 + N) % N]) / 2 - off[i];
-      vel[i] += (a + 140 * nb) * dt;
-      off[i] += vel[i] * dt;
-    }
-    render(reduce ? 0 : now / 1000);
-  };
-  requestAnimationFrame(tick);
 
-  stage.addEventListener('pointerdown', (e) => {
-    const [x, y] = local(e);
-    pressed = true;
-    poke(x, y, 520);
-    squintUntil = last / 1000 + 0.45;
-    pokesEl.textContent = String(++pokes);
-    try { localStorage.setItem('clay-pokes', String(pokes)); } catch {}
+    stage.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
+      const [x, y] = local(e);
+      pressed = true;
+      poke(x, y, 560);
+      squintUntil = last / 1000 + 0.45;
+      pokes++;
+      showPokes();
+      try { localStorage.setItem('clay-pokes', String(pokes)); } catch {}
+    });
+    stage.addEventListener('pointermove', (e) => {
+      const [x, y] = local(e);
+      look = [x, y - 20];
+      if (pressed) poke(x, y, 40);
+    });
+    for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) stage.addEventListener(ev, () => (pressed = false));
   });
-  stage.addEventListener('pointermove', (e) => {
-    const [x, y] = local(e);
-    look = [x, y - 20];
-    if (pressed) poke(x, y, 40);
-  });
-  for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) stage.addEventListener(ev, () => (pressed = false));
 </script>
 
 <style>
-  .clay { margin: 0; position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; min-width: 0; }
-  .tape-label {
-    position: absolute; top: 2%; left: 50%; z-index: 2; width: 150px; height: 34px;
-    transform: translateX(-50%) rotate(-4deg);
-    background: rgba(205, 180, 236, 0.7);
-    display: flex; align-items: center; justify-content: center; font-size: 24px;
-  }
-  .stage { position: relative; width: 100%; max-width: 520px; aspect-ratio: 1 / 1; cursor: pointer; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+  .clay { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; }
+  .stage { position: relative; width: var(--size); max-width: 100%; aspect-ratio: 1 / 1; cursor: pointer; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
   .stage svg { width: 100%; height: 100%; overflow: visible; }
-  figcaption { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; color: var(--pen); font-size: 24px; }
-  .cap { font-size: 28px; line-height: 1.1; }
+  .tape-label {
+    position: absolute; top: 2%; left: 50%; z-index: 2; width: 36%; height: 8%;
+    transform: translateX(-50%) rotate(-4deg);
+    background: rgba(205, 180, 236, 0.75);
+    display: flex; align-items: center; justify-content: center; font-size: calc(var(--size) * 0.06);
+  }
+  figcaption { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; color: var(--pen); font-size: 23px; }
+  .cap { font-size: 27px; line-height: 1.1; }
 </style>

@@ -1,0 +1,392 @@
+---
+import { existsSync } from 'node:fs';
+import ClayBlob from './ClayBlob.astro';
+import Mark from './Mark.astro';
+import Ticket from './Ticket.astro';
+import { type Post, readingTime } from '../lib';
+import { profile, currently, chapters, talks, made } from '../data/site';
+
+interface Props { posts: Post[] }
+const { posts } = Astro.props;
+const hasCv = existsSync('public/cv-yara-debian.pdf');
+const [featured] = posts;
+const tabs = [
+  { label: 'me', h: 72, bg: 'var(--peach)' },
+  { label: 'journey', h: 104, bg: 'var(--lilac)' },
+  { label: 'talks', h: 84, bg: 'var(--sky)' },
+  { label: 'clay', h: 78, bg: '#F4C6B0' },
+  { label: 'writing', h: 100, bg: 'var(--mint)' },
+  { label: 'say hi', h: 90, bg: 'var(--butter)' },
+];
+---
+<div class="desk" data-spread>
+  <svg class="crayons" aria-hidden="true" viewBox="0 0 220 260">
+    <rect x="30" y="40" width="34" height="170" rx="14" fill="#F4B49A" filter="url(#yd-pastel)" />
+    <rect x="30" y="150" width="34" height="60" rx="6" fill="#FFFDF8" opacity="0.9" />
+    <rect x="80" y="70" width="34" height="160" rx="14" fill="#CDB4EC" filter="url(#yd-pastel)" />
+    <rect x="80" y="170" width="34" height="60" rx="6" fill="#FFFDF8" opacity="0.9" />
+    <rect x="130" y="56" width="34" height="170" rx="14" fill="#9EC5E8" filter="url(#yd-pastel)" />
+    <rect x="130" y="166" width="34" height="60" rx="6" fill="#FFFDF8" opacity="0.9" />
+  </svg>
+  <svg class="pencil" aria-hidden="true" viewBox="0 0 300 40">
+    <rect x="30" y="10" width="230" height="20" fill="#F2D66B" />
+    <rect x="260" y="10" width="26" height="20" rx="4" fill="#F29BB0" />
+    <path d="M30 10 L2 20 L30 30 Z" fill="#E9C9A6" />
+    <path d="M10 17 L2 20 L10 23 Z" fill="#2A2433" />
+  </svg>
+
+  <header class="sp-head">
+    <a href="/" class="logo hand">
+      yara's notebook
+      <svg viewBox="0 0 200 14" width="190" height="12" aria-hidden="true"><path d="M3 9 C 40 2, 80 13, 120 6 S 180 4, 197 8" fill="none" stroke="#F4B49A" stroke-width="9" stroke-linecap="round" filter="url(#yd-pastel)" /></svg>
+    </a>
+    {hasCv && <a href="/cv-yara-debian.pdf" download class="cv hand">download my CV <span aria-hidden="true">↓</span></a>}
+  </header>
+
+  <div class="fit">
+    <div class="book">
+      <div class="under under-1" aria-hidden="true"></div>
+      <div class="under under-2" aria-hidden="true"></div>
+
+      <section class="pg left" aria-label="Page 1">
+        <p class="hand date" data-today>page 1</p>
+        <h1 class="hand hi">Hi, I'm <Mark color="#CDB4EC" variant="wave">Yara.</Mark></h1>
+        <p class="bio">I'm an <span class="hl" style="--hl: var(--hl-peach)">AI engineer</span> <span class="aside hand">(new chapter! p.3)</span> who still thinks in Ruby, a speaker who asks slightly-too-big questions, and on weekends I squish <span class="hl" style="--hl: var(--hl-purple)">air-dry clay</span> and smudge oil pastels.</p>
+        <p class="hand pen-note">→ this notebook is where I think out loud: code, art, philosophy, and learning AI in public.</p>
+        <div class="row">
+          <button type="button" class="btn-ink" data-go="1" style="transform: rotate(-1.5deg)">turn the page →</button>
+          <a href="/writing" class="hand read-link">or read my notes</a>
+        </div>
+        <span class="num l hand">1</span>
+      </section>
+
+      <section class="pg right static" aria-label="Page 12">
+        <div class="lined hand">
+          <span class="tape" style="background: rgba(246,229,166,0.9); left: 50%; width: 110px; height: 28px; top: -14px; transform: translateX(-50%) rotate(4deg)" aria-hidden="true"></span>
+          <p>who are you?</p>
+          <p>where does the code come from?</p>
+          <p class="small soft">(a note in a mailbox, after <em>Sophie's World</em>)</p>
+        </div>
+        <p class="hand belongs">this notebook belongs to {profile.name}<br />if found, please return to {profile.city}</p>
+        <span class="num r hand">12</span>
+      </section>
+
+      <div class="leaf" data-leaf="0">
+        <section class="pg right front">
+          <ClayBlob size={330} />
+          <div class="sticky currently">
+            <span class="c-head">currently…</span>
+            {currently.map(([k, v]) => <span><span class="c-key">{k}</span>: {k === 'reading' ? <em>{v}</em> : v}</span>)}
+          </div>
+          <span class="num r hand">2</span>
+        </section>
+        <section class="pg left back">
+          <p class="page-label">page 3</p>
+          <h2 class="hand h-big"><Mark color="#CFE2F2" width={14}>how I got here</Mark></h2>
+          <p class="body">Plot twist: I didn't start coding out of passion. It was practical, comfortable, and a little grey.</p>
+          <p class="body">To really connect with it, I had to make logic appealing to a dreamy mind. First I found art in code. Then philosophy. Now I'm learning what all of that means in the age of AI.</p>
+          <p class="hand pen-end">the chapters so far →</p>
+          <span class="num l hand">3</span>
+        </section>
+      </div>
+
+      <div class="leaf" data-leaf="1">
+        <section class="pg right front chapters-page">
+          <ol class="chapters">
+            {chapters.map((c) => (
+              <li class:list={['chapter', { current: c.current }]} style={`transform: rotate(${c.tilt}deg)`}>
+                <span class="tape" style={`background: ${c.tape}; left: 30%; transform: rotate(${-c.tilt * 2}deg)`} aria-hidden="true"></span>
+                <span class="hand ch-label">{c.label}</span>
+                <span class="hand ch-title">{c.title}</span>
+                <span class="ch-body" set:html={c.body} />
+              </li>
+            ))}
+          </ol>
+          <span class="num r hand">4</span>
+        </section>
+        <section class="pg left back">
+          <p class="page-label">page 5</p>
+          <h2 class="hand h-mid">things I said <Mark color="#F4B49A" variant="circle">on stage</Mark></h2>
+          <Ticket talk={talks[0]} tilt={-1} />
+          <span class="num l hand">5</span>
+        </section>
+      </div>
+
+      <div class="leaf" data-leaf="2">
+        <section class="pg right front talk2">
+          <Ticket talk={talks[1]} tilt={1.2} />
+          <p class="hand invite">want one at your event? <button type="button" data-go="5">→ invite me</button></p>
+          <span class="num r hand">6</span>
+        </section>
+        <section class="pg left back">
+          <p class="page-label">page 7</p>
+          <h2 class="hand h-mid">made with my <Mark color="#D3E8CF">hands</Mark></h2>
+          <p class="body small-body">Air-dry clay and oil pastels: where I go when the code needs to rest.</p>
+          <figure class="polaroid p0" style="transform: rotate(-4deg)">
+            {made[0]?.src ? <img src={made[0].src} alt={`${made[0].title}, ${made[0].medium}`} loading="lazy" /> : <div class="ph" style={`background: ${made[0]?.color}`}>[PHOTO]</div>}
+            <figcaption class="hand">{made[0]?.title} · {made[0]?.medium} · {made[0]?.year}</figcaption>
+          </figure>
+          <span class="num l hand">7</span>
+        </section>
+      </div>
+
+      <div class="leaf" data-leaf="3">
+        <section class="pg right front photos-page">
+          {made.slice(1, 3).map((m, i) => (
+            <figure class:list={['polaroid', `p${i + 1}`]} style={`transform: rotate(${i === 0 ? 3 : -5}deg)`}>
+              {m.src ? <img src={m.src} alt={`${m.title}, ${m.medium}`} loading="lazy" /> : <div class="ph" style={`background: ${m.color}`}>[PHOTO]</div>}
+              <figcaption class="hand">{m.title} · {m.medium} · {m.year}</figcaption>
+            </figure>
+          ))}
+          <span class="num r hand">8</span>
+        </section>
+        <section class="pg left back">
+          <p class="page-label">page 9</p>
+          <h2 class="hand h-big2">notes &amp; essays</h2>
+          <ol class="entries">
+            {posts.slice(0, 5).map((p, i) => (
+              <li>
+                <a href={`/writing/${p.id}`}>
+                  <span class="e-title">{p.data.title}{i === 0 && <span class="new hand">new!</span>}</span>
+                  <span class="leader" aria-hidden="true"></span>
+                  <span class="hand e-tag">{p.data.tags[0]}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+          <a href="/writing" class="hand all-tab">all entries →</a>
+          <span class="num l hand">9</span>
+        </section>
+      </div>
+
+      <div class="leaf" data-leaf="4">
+        <section class="pg right front featured-page">
+          {featured && (
+            <a href={`/writing/${featured.id}`} class="featured">
+              <span class="tape" style="background: rgba(205,180,236,0.8); left: 12%; width: 110px; height: 28px; top: -14px; transform: rotate(-4deg)" aria-hidden="true"></span>
+              <span class="hand f-meta">newest{featured.data.tags[0] && ` · ${featured.data.tags[0]}`} · {readingTime(featured.body)} min</span>
+              <span class="hand f-title">{featured.data.title}</span>
+              {featured.data.description && <span class="f-dek">{featured.data.description}</span>}
+              <span class="hand f-read">read the entry →</span>
+            </a>
+          )}
+          <span class="num r hand">10</span>
+        </section>
+        <section class="pg left back">
+          <p class="page-label">page 11 · last spread</p>
+          <h2 class="hand h-big">leave me a note</h2>
+          <p class="body">About a talk, an AI project, clay tips, or a question you can't stop thinking about. I read every one.</p>
+          <a href={`mailto:${profile.email}`} class="btn-ink" style="align-self: flex-start; transform: rotate(1.5deg)">write to me ✎</a>
+          <nav aria-label="Elsewhere" class="hand elsewhere">
+            {profile.links.map((l) => <a href={l.href} target="_blank" rel="noopener">{l.label}</a>)}
+            <a href="/rss.xml">rss</a>
+          </nav>
+          <span class="num l hand">11</span>
+        </section>
+      </div>
+
+      <div class="spiral" aria-hidden="true">{Array.from({ length: 16 }, () => <span></span>)}</div>
+
+      <button type="button" class="corner prev" data-prev aria-label="Previous page">
+        <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><path d="M2 2 L2 62 L62 62 Z" fill="#F1EBE1" /><path d="M2 2 L62 62 L2 62" fill="#E4D6F3" stroke="#B5ABC6" stroke-width="1" /><text x="12" y="54" font-family="Nanum Pen Script, cursive" font-size="22" fill="#2A2433">←</text></svg>
+      </button>
+      <button type="button" class="corner next" data-next aria-label="Next page">
+        <svg viewBox="0 0 64 64" width="64" height="64" aria-hidden="true"><path d="M62 2 L62 62 L2 62 Z" fill="#F9D5C4" stroke="#E0B8A4" stroke-width="1" /><text x="36" y="54" font-family="Nanum Pen Script, cursive" font-size="22" fill="#2A2433">→</text></svg>
+      </button>
+
+      <nav class="tabs hand" aria-label="Notebook tabs">
+        {tabs.map((t, i) => (
+          <button type="button" data-go={i} style={`height: ${t.h}px; background: ${t.bg}`}>{t.label}</button>
+        ))}
+      </nav>
+    </div>
+  </div>
+
+  <p class="hint hand" aria-hidden="true">click the corner, a tab, or use ← → to turn the page</p>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-spread]');
+  if (root) {
+    const SPREADS = 6;
+    const leaves = [...root.querySelectorAll<HTMLElement>('[data-leaf]')];
+    const tabs = [...root.querySelectorAll<HTMLButtonElement>('.tabs [data-go]')];
+    const prev = root.querySelector<HTMLButtonElement>('[data-prev]')!;
+    const next = root.querySelector<HTMLButtonElement>('[data-next]')!;
+    const hashes = ['me', 'journey', 'talks', 'made', 'writing', 'hi'];
+    let spread = Math.max(0, hashes.indexOf(location.hash.slice(1)));
+    let top = -1;
+
+    const render = () => {
+      leaves.forEach((leaf, i) => {
+        const turned = i < spread;
+        leaf.style.transform = turned ? 'rotateY(-180deg)' : 'rotateY(0deg)';
+        leaf.style.zIndex = String(i === top ? 200 : turned ? 10 + i : 100 - i);
+        const front = leaf.querySelector('.front')!, back = leaf.querySelector('.back')!;
+        const frontOn = !turned && i === spread, backOn = turned && i === spread - 1;
+        front.toggleAttribute('inert', !frontOn);
+        back.toggleAttribute('inert', !backOn);
+      });
+      root.querySelector('.pg.left:not(.back)')!.toggleAttribute('inert', spread !== 0);
+      root.querySelector('.pg.static')!.toggleAttribute('inert', spread !== SPREADS - 1);
+      tabs.forEach((t, i) => t.toggleAttribute('aria-current', i === spread));
+      prev.disabled = spread === 0;
+      next.disabled = spread === SPREADS - 1;
+    };
+
+    const go = (s: number) => {
+      s = Math.max(0, Math.min(SPREADS - 1, s));
+      if (s === spread) return;
+      top = s > spread ? s - 1 : s;
+      spread = s;
+      render();
+      history.replaceState(null, '', s === 0 ? location.pathname : `#${hashes[s]}`);
+    };
+
+    root.querySelectorAll<HTMLElement>('[data-go]').forEach((b) => b.addEventListener('click', () => go(Number(b.dataset.go))));
+    prev.addEventListener('click', () => go(spread - 1));
+    next.addEventListener('click', () => go(spread + 1));
+    addEventListener('keydown', (e) => {
+      if (root.offsetParent === null || (e.target as HTMLElement).closest('input, textarea')) return;
+      if (e.key === 'ArrowRight') go(spread + 1);
+      if (e.key === 'ArrowLeft') go(spread - 1);
+    });
+
+    // The notebook is drawn at a fixed 1360x744 and scaled to the window, so the hand-placed layout never reflows.
+    const fit = () => {
+      const s = Math.min((innerWidth - 150) / 1360, (innerHeight - 150) / 744, 1.15);
+      root.style.setProperty('--s', String(Math.max(s, 0.5)));
+    };
+    addEventListener('hashchange', () => go(Math.max(0, hashes.indexOf(location.hash.slice(1)))));
+    addEventListener('resize', fit);
+    fit();
+    render();
+  }
+</script>
+
+<style>
+  .desk {
+    --s: 1;
+    position: relative; min-height: 100svh; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 96px 0 34px;
+    background-color: #E6DCCF;
+    background-image: radial-gradient(rgba(255,255,255,0.35) 1px, transparent 1.5px), radial-gradient(rgba(120,90,60,0.08) 1px, transparent 1.5px);
+    background-size: 7px 7px, 11px 11px;
+  }
+  .crayons { position: absolute; left: -10px; bottom: -20px; width: 220px; height: 260px; transform: rotate(-8deg); pointer-events: none; }
+  .pencil { position: absolute; right: -60px; bottom: 30px; width: 300px; height: 40px; transform: rotate(-24deg); pointer-events: none; }
+
+  .sp-head { position: absolute; left: 40px; right: 40px; top: 22px; display: flex; align-items: center; gap: 28px; z-index: 5; }
+  .logo { display: inline-flex; flex-direction: column; text-decoration: none; color: var(--ink); font-size: 40px; line-height: 0.9; }
+  .logo svg { overflow: visible; }
+  .cv { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 2px dashed var(--ink); border-radius: 22px 16px 20px 14px; text-decoration: none; color: var(--ink); font-size: 26px; transition: transform .25s cubic-bezier(.3,1.6,.5,1); }
+  .cv:hover { color: var(--ink); transform: rotate(-2deg) scale(1.04); background: var(--butter); }
+
+  .fit { position: relative; width: calc(1360px * var(--s)); height: calc(744px * var(--s)); }
+  .book { position: absolute; left: 0; top: 0; width: 1360px; height: 744px; transform: scale(var(--s)); transform-origin: 0 0; perspective: 2800px; }
+  .under { position: absolute; border-radius: 8px; }
+  .under-1 { inset: 8px -6px -10px -6px; background: #D9CFC2; box-shadow: 0 30px 60px rgba(70,50,30,0.25); }
+  .under-2 { inset: 4px -3px -5px -3px; background: #F1EBE1; border-radius: 6px; }
+
+  .pg {
+    position: absolute; top: 0; width: 680px; height: 744px; box-sizing: border-box;
+    background-color: var(--paper); background-size: 100% 100%, 24px 24px;
+    display: flex; flex-direction: column; gap: 22px; overflow: hidden;
+  }
+  .pg.left { left: 0; padding: 64px 70px 56px 64px; border-radius: 6px 0 0 6px; background-image: linear-gradient(to left, rgba(90,70,40,0.16), rgba(90,70,40,0) 60px), radial-gradient(var(--dots) 1.1px, transparent 1.4px); }
+  .pg.right { left: 680px; padding: 64px 64px 56px 70px; border-radius: 0 6px 6px 0; background-image: linear-gradient(to right, rgba(90,70,40,0.16), rgba(90,70,40,0) 60px), radial-gradient(var(--dots) 1.1px, transparent 1.4px); }
+  .leaf { position: absolute; left: 680px; top: 0; width: 680px; height: 744px; transform-origin: left center; transform-style: preserve-3d; transition: transform .9s cubic-bezier(.45,.05,.25,1); }
+  .leaf .pg { left: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+  .leaf .back { transform: rotateY(180deg); }
+  .num { position: absolute; bottom: 22px; font-size: 22px; color: #9A92AE; }
+  .num.l { left: 64px; } .num.r { right: 64px; }
+
+  .date { margin: 0; font-size: 26px; color: var(--ink-soft); transform: rotate(-2deg); align-self: flex-start; }
+  .hi { margin: 0; font-size: 120px; line-height: 0.8; font-weight: 400; }
+  .hi :global(.mark svg) { left: -4%; width: 108%; bottom: -12px; height: 30px; }
+  .bio { margin: 10px 0 0; font-size: 23px; line-height: 1.5; font-weight: 300; }
+  .aside { display: inline-block; transform: rotate(-5deg); font-size: 24px; color: var(--pen); }
+  .pen-note { margin: 0; font-size: 28px; line-height: 1.15; color: var(--pen); transform: rotate(-1.5deg); }
+  .row { margin-top: auto; display: flex; align-items: center; gap: 26px; }
+  .row .btn-ink { border: 0; cursor: pointer; }
+  .read-link { font-size: 28px; }
+
+  .static { align-items: center; justify-content: center; gap: 26px; }
+  .lined { position: relative; width: 400px; padding: 52px 40px 36px; box-sizing: border-box; background: var(--card) repeating-linear-gradient(transparent 0 41px, var(--sky) 41px 43px); transform: rotate(-3deg); box-shadow: 0 16px 32px rgba(90,70,40,0.16); font-size: 36px; line-height: 43px; color: var(--pen); }
+  .lined p { margin: 0; }
+  .lined .small { font-size: 26px; }
+  .belongs { margin: 30px 0 0; font-size: 26px; color: var(--ink-soft); text-align: center; }
+
+  .front:has(.clay) { align-items: center; gap: 6px; padding-top: 40px; }
+  .currently { margin-top: auto; align-self: flex-end; width: 280px; padding: 18px 22px; background: var(--butter); transform: rotate(3deg); font-size: 22px; display: flex; flex-direction: column; gap: 2px; }
+  .c-head { font-size: 27px; }
+  .c-key { text-decoration: underline; text-decoration-color: var(--rose); text-decoration-thickness: 2px; text-underline-offset: 5px; }
+
+  .page-label { margin: 0; font-family: var(--hand); font-size: 26px; color: var(--ink-soft); }
+  .h-big { margin: 0; font-weight: 400; font-size: 100px; line-height: 0.82; }
+  .h-big2 { margin: 0; font-weight: 400; font-size: 96px; line-height: 0.82; }
+  .h-mid { margin: 0; font-weight: 400; font-size: 84px; line-height: 0.82; }
+  .body { margin: 0; font-size: 22px; line-height: 1.6; font-weight: 300; }
+  .small-body { font-size: 20px; }
+  .pen-end { margin: auto 0 0; align-self: flex-end; font-size: 30px; color: var(--pen); transform: rotate(-3deg); }
+
+  .chapters-page { padding: 70px 60px 56px 76px; }
+  .chapters { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px 26px; }
+  .chapter { position: relative; height: 270px; box-sizing: border-box; padding: 34px 20px 20px; background: var(--card); box-shadow: 0 10px 22px rgba(90,70,40,0.10); display: flex; flex-direction: column; gap: 10px; }
+  .chapter.current { background: var(--peach); }
+  .ch-label { font-size: 23px; color: var(--rose); }
+  .current .ch-label { color: var(--rose-deep); }
+  .ch-title { font-size: 36px; line-height: 0.95; }
+  .ch-body { font-size: 16px; line-height: 1.5; font-weight: 300; }
+
+  .talk2 { padding-top: 150px; gap: 30px; }
+  .invite { margin: 20px 0 0; align-self: flex-end; font-size: 30px; color: var(--pen); transform: rotate(-2deg); }
+  .invite button { min-height: 44px; padding: 0 4px; border: 0; background: none; color: var(--pen); text-decoration: underline; font: inherit; cursor: pointer; }
+
+  .polaroid { margin: 0; padding: 14px 14px 18px; background: #fff; box-shadow: 0 12px 26px rgba(90,70,40,0.14); display: flex; flex-direction: column; gap: 12px; }
+  .polaroid img, .polaroid .ph { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+  .polaroid .ph { display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 13px; }
+  .polaroid figcaption { font-size: 24px; text-align: center; }
+  .p0 { margin: 10px 0 0 40px; width: 290px; }
+  .photos-page { padding: 0; }
+  .p1, .p2 { position: absolute; width: 250px; }
+  .p1 { left: 90px; top: 40px; }
+  .p2 { left: 340px; top: 340px; }
+  .p1 figcaption, .p2 figcaption { font-size: 22px; }
+
+  .entries { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; }
+  .entries a { display: flex; align-items: baseline; gap: 12px; min-height: 56px; padding: 8px 0; text-decoration: none; color: var(--ink); }
+  .entries a:hover .e-title { color: var(--rose); }
+  .e-title { font-size: 21px; line-height: 1.25; }
+  .new { display: inline-block; transform: rotate(-6deg); font-size: 22px; color: var(--rose); margin-left: 8px; }
+  .leader { flex: 1 1 20px; border-bottom: 2px dotted var(--leader); transform: translateY(-6px); }
+  .e-tag { font-size: 22px; color: var(--ink-soft); white-space: nowrap; }
+  .all-tab { margin-top: auto; align-self: flex-start; display: inline-flex; align-items: center; min-height: 48px; padding: 0 20px; background: var(--mint); border-radius: 14px 14px 4px 4px; text-decoration: none; color: var(--ink); font-size: 26px; }
+
+  .featured-page { padding-top: 80px; }
+  .featured { position: relative; display: flex; flex-direction: column; gap: 14px; padding: 40px 32px 32px; background: var(--card); box-shadow: 0 14px 30px rgba(90,70,40,0.12); transform: rotate(-1deg); text-decoration: none; color: var(--ink); transition: transform .3s cubic-bezier(.3,1.6,.5,1); }
+  .featured:hover { color: var(--ink); transform: rotate(0deg) scale(1.01); }
+  .f-meta { font-size: 24px; color: var(--rose); }
+  .f-title { font-size: 58px; line-height: 0.88; }
+  .f-dek { font-size: 18px; line-height: 1.6; font-weight: 300; }
+  .f-read { font-size: 28px; color: var(--pen); }
+
+  .elsewhere { margin-top: auto; display: flex; flex-wrap: wrap; gap: 0 26px; font-size: 26px; }
+  .elsewhere a { display: inline-flex; align-items: center; min-height: 44px; }
+
+  .spiral { position: absolute; left: 669px; top: 22px; width: 22px; height: 700px; z-index: 300; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; }
+  .spiral span { height: 12px; border: 3px solid #8E8699; border-radius: 8px; }
+
+  .corner { position: absolute; bottom: -2px; z-index: 310; width: 64px; height: 64px; padding: 0; border: 0; background: transparent; cursor: pointer; transition: transform .3s ease, opacity .3s; }
+  .corner:hover:not(:disabled) { transform: scale(1.15) rotate(-6deg); }
+  .corner:disabled { opacity: 0; pointer-events: none; }
+  .corner.prev { left: -2px; } .corner.next { right: -2px; }
+
+  .tabs { position: absolute; left: 1360px; top: 48px; z-index: 5; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; font-size: 23px; }
+  .tabs button { width: 38px; padding: 0; border: 0; border-radius: 0 12px 12px 0; writing-mode: vertical-rl; color: var(--ink); font: inherit; cursor: pointer; box-shadow: 4px 4px 8px rgba(90,70,40,0.10); transform: translateX(-8px); transition: transform .35s cubic-bezier(.3,1.6,.5,1); }
+  .tabs button:hover, .tabs button[aria-current] { transform: translateX(0); }
+
+  .hint { margin: 0; font-size: 21px; color: #7A6E64; }
+
+  @media (prefers-reduced-motion: reduce) { .leaf, .tabs button, .corner { transition: none; } }
+</style>

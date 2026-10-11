@@ -1,218 +1,26 @@
 ---
 import Base from '../layouts/Base.astro';
-import ClayBlob from '../components/ClayBlob.astro';
-import Mark from '../components/Mark.astro';
-import Entries from '../components/Entries.astro';
+import Spread from '../components/Spread.astro';
+import FlipBook from '../components/FlipBook.astro';
 import { getPosts } from '../lib';
-import { profile, currently, chapters, talks, made } from '../data/site';
 
-const posts = (await getPosts()).slice(0, 3);
+const posts = await getPosts();
 ---
-<Base>
-  <section id="about" class="wrap about">
-    <div class="intro">
-      <p class="hand date" data-today>page 1</p>
-      <h1 class="hand hi">Hi, I'm <Mark color="#CDB4EC" variant="wave">Yara.</Mark></h1>
-      <p class="bio">I'm an <span class="hl" style="--hl: var(--hl-peach)">AI engineer</span> <span class="aside hand">(new chapter! p.2)</span> who still thinks in Ruby, a speaker who asks slightly-too-big questions, and on weekends I squish <span class="hl" style="--hl: var(--hl-purple)">air-dry clay</span> and smudge oil pastels.</p>
-      <p class="hand pen-note">→ this notebook is where I think out loud: code, art, philosophy, and learning AI in public.</p>
-      <div class="ctas">
-        <a href="#journey" class="btn-ink wiggle" style="transform: rotate(-1.5deg)">turn the page ↓</a>
-        <a href="/writing" class="hand read-link">or read my notes →</a>
-      </div>
-    </div>
-    <ClayBlob />
-  </section>
-
-  <div class="wrap currently-row">
-    <div class="sticky currently wiggle">
-      <span class="c-head">currently…</span>
-      {currently.map(([k, v]) => <span><span class="c-key">{k}</span>: {k === 'reading' ? <em>{v}</em> : v}</span>)}
-    </div>
-  </div>
-
-  <section id="journey" class="wrap section">
-    <div class="head reveal">
-      <p class="page-label">page 2</p>
-      <h2 class="page-title"><Mark color="#CFE2F2" width={14}>how I got here</Mark></h2>
-      <p class="lede">Plot twist: I didn't start coding out of passion. It was practical. To connect with it, I had to make logic appealing to a dreamy mind: first through art, then philosophy, now AI.</p>
-    </div>
-    <ol class="chapters">
-      {chapters.map((c, i) => (
-        <li class:list={['chapter wiggle reveal', { current: c.current }]} style={`transform: rotate(${c.tilt}deg); transition-delay: ${i * 70}ms`}>
-          <span class="tape" style={`background: ${c.tape}; left: 30%; transform: rotate(${-c.tilt * 2}deg)`} aria-hidden="true"></span>
-          <span class="hand ch-label">{c.label}</span>
-          <h3 class="hand ch-title">{c.title}</h3>
-          <p class="ch-body" set:html={c.body} />
-        </li>
-      ))}
-    </ol>
-  </section>
-
-  <section id="talks" class="wrap section">
-    <div class="head reveal">
-      <p class="page-label">page 3</p>
-      <h2 class="page-title">things I said <Mark color="#F4B49A" variant="circle">on stage</Mark></h2>
-    </div>
-    <div class="tickets">
-      {talks.map((t) => (
-        <article class="ticket wiggle reveal" style={`background: ${t.color}; transform: rotate(${t.tilt}deg)`}>
-          <div class="stub">
-            <span class="admit">Admit one</span>
-            {t.art === 'palette' ? (
-              <svg viewBox="0 0 160 120" width="150" height="112" aria-hidden="true">
-                <path d="M20 70 C 10 30, 60 6, 100 14 C 140 22, 156 56, 136 80 C 126 92, 110 82, 100 92 C 88 104, 98 116, 70 114 C 38 112, 26 96, 20 70 Z" fill="#FFFDF8" stroke="#2A2433" stroke-width="3" />
-                <circle cx="52" cy="48" r="11" fill="#F4B49A" filter="url(#yd-pastel)" />
-                <circle cx="86" cy="36" r="11" fill="#9EC5E8" filter="url(#yd-pastel)" />
-                <circle cx="118" cy="52" r="11" fill="#F2D66B" filter="url(#yd-pastel)" />
-                <circle cx="48" cy="84" r="11" fill="#B79CE0" filter="url(#yd-pastel)" />
-              </svg>
-            ) : (
-              <svg viewBox="0 0 160 120" width="150" height="112" aria-hidden="true">
-                <circle cx="112" cy="26" r="9" fill="none" stroke="#2A2433" stroke-width="2.5" />
-                <circle cx="128" cy="12" r="5" fill="none" stroke="#2A2433" stroke-width="2.5" />
-                <path d="M30 34 H 96 M36 34 V 104 M50 34 V 104 M64 34 V 104 M78 34 V 104 M90 34 V 104 M24 104 H 102 M24 112 H 102" fill="none" stroke="#2A2433" stroke-width="3" stroke-linecap="round" />
-                <path d="M26 30 C 40 20, 86 20, 100 30" fill="none" stroke="#F4B49A" stroke-width="10" stroke-linecap="round" filter="url(#yd-pastel)" />
-              </svg>
-            )}
-            <span class="hand event">{t.event}<br />{t.year}</span>
-          </div>
-          <div class="ticket-body">
-            <h3 class="hand">{t.title}</h3>
-            <p set:html={t.blurb} />
-            {(t.video || t.slides || t.summary) && (
-              <div class="hand ticket-links">
-                {t.video && <a href={t.video} target="_blank" rel="noopener">watch ↗</a>}
-                {t.slides && <a href={t.slides} target="_blank" rel="noopener">slides ↗</a>}
-                {t.summary && <a href={t.summary} target="_blank" rel="noopener">summary ↗</a>}
-              </div>
-            )}
-          </div>
-        </article>
-      ))}
-    </div>
-    <p class="hand invite">want one of these at your event? <a href="#hi">→ invite me</a></p>
-  </section>
-
-  <section id="made" class="wrap section">
-    <div class="head reveal">
-      <p class="page-label">page 4</p>
-      <h2 class="page-title">made with my <Mark color="#D3E8CF">hands</Mark></h2>
-      <p class="lede">Air-dry clay and oil pastels: where I go when the code needs to rest.</p>
-    </div>
-    <div class="polaroids">
-      {made.map((m) => (
-        <figure class="polaroid wiggle reveal" style={`transform: rotate(${m.tilt}deg)`}>
-          {m.src ? (
-            <img src={m.src} alt={`${m.title}, ${m.medium}`} loading="lazy" />
-          ) : (
-            <div class="placeholder" style={`background: ${m.color}`}>[PHOTO: {m.medium.toUpperCase()}]</div>
-          )}
-          <figcaption class="hand">{m.title} · {m.medium} · {m.year}</figcaption>
-        </figure>
-      ))}
-    </div>
-  </section>
-
-  <section id="writing" class="wrap section">
-    <div class="head-row reveal">
-      <div class="head">
-        <p class="page-label">page 5</p>
-        <h2 class="page-title">notes &amp; essays</h2>
-      </div>
-      <a href="/writing" class="hand all">all of them →</a>
-    </div>
-    {posts.length ? <Entries posts={posts} /> : <p class="hand soft empty">first entry coming soon. something is already bothering me.</p>}
-  </section>
-
-  <section id="hi" class="wrap section hi-section">
-    <div class="hi-copy">
-      <p class="page-label">last page</p>
-      <h2 class="page-title">leave me a note</h2>
-      <p class="lede">About a talk, an AI project, clay tips, or a question you can't stop thinking about. I read every one.</p>
-      <a href={`mailto:${profile.email}`} class="btn-ink wiggle" style="transform: rotate(1.5deg); align-self: flex-start">write to me ✎</a>
-    </div>
-    <div class="note-wrap">
-      <div class="lined wiggle hand">
-        <span class="tape" style="background: var(--butter); left: 50%; transform: translateX(-50%) rotate(4deg); width: 110px; height: 28px; top: -14px" aria-hidden="true"></span>
-        <p>who are you?</p>
-        <p>where does the code come from?</p>
-        <p class="soft small">(a note in a mailbox, after <em>Sophie's World</em>)</p>
-      </div>
-    </div>
-  </section>
+<Base bare>
+  <div class="as-spread"><Spread posts={posts} /></div>
+  <div class="as-flip"><FlipBook posts={posts} /></div>
 </Base>
 
 <script>
-  const el = document.querySelector('[data-today]');
-  if (el) el.textContent = new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).toLowerCase().replace(',', '') + ' · page 1';
+  const label = new Date().toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }).toLowerCase().replace(',', '') + ' · page 1';
+  document.querySelectorAll('[data-today]').forEach((el) => (el.textContent = label));
 </script>
 
 <style>
-  .about {
-    padding-top: clamp(32px, 5vw, 72px); padding-bottom: 40px;
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr)); gap: 40px 56px; align-items: center;
+  .as-flip { display: none; }
+  /* The open spread needs a laptop-sized window; anything smaller gets the one-page flip-book. */
+  @media (max-width: 999px), (max-height: 619px) {
+    .as-spread { display: none; }
+    .as-flip { display: block; }
   }
-  .intro { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
-  .date { margin: 0; font-size: 26px; color: var(--ink-soft); transform: rotate(-2deg); align-self: flex-start; }
-  .hi { margin: 0; font-size: clamp(88px, 11vw, 168px); line-height: 0.8; }
-  .hi :global(.mark svg) { left: -4%; width: 108%; bottom: -14px; height: 34px; }
-  .bio { margin: 8px 0 0; max-width: 32ch; font-size: clamp(21px, 1.9vw, 26px); line-height: 1.5; font-weight: 300; text-wrap: pretty; }
-  .aside { display: inline-block; transform: rotate(-5deg); font-size: 24px; color: var(--pen); }
-  .pen-note { margin: 0; max-width: 34ch; font-size: 28px; line-height: 1.15; color: var(--pen); transform: rotate(-1.5deg); }
-  .ctas { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; margin-top: 6px; }
-  .read-link { display: inline-flex; align-items: center; min-height: 54px; font-size: 30px; }
-
-  .currently-row { display: flex; justify-content: flex-end; }
-  .currently { width: 100%; max-width: 380px; padding: 26px 28px; background: var(--butter); transform: rotate(2deg); display: flex; flex-direction: column; gap: 6px; }
-  .c-head { font-size: 32px; }
-  .c-key { text-decoration: underline; text-decoration-color: var(--rose); text-decoration-thickness: 2px; text-underline-offset: 5px; text-decoration-skip-ink: none; }
-
-  .section { padding-top: clamp(80px, 9vw, 130px); padding-bottom: 40px; display: flex; flex-direction: column; gap: 44px; }
-  .head { display: flex; flex-direction: column; gap: 10px; }
-  .head-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 40px; }
-  .all { display: inline-flex; align-items: center; min-height: 48px; font-size: 30px; }
-
-  .chapters { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); gap: 36px 28px; }
-  .chapter { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 40px 24px 28px; background: var(--card); box-shadow: 0 10px 22px rgba(90, 70, 40, 0.1); }
-  .chapter.current { background: var(--peach); }
-  .ch-label { font-size: 26px; color: var(--rose); }
-  .current .ch-label { color: var(--rose-deep); }
-  .ch-title { margin: 0; font-size: 40px; line-height: 0.95; }
-  .ch-body { margin: 0; font-size: 17px; line-height: 1.55; font-weight: 300; }
-  .current .ch-body { font-weight: 400; }
-
-  .tickets { display: flex; flex-direction: column; gap: 40px; }
-  .ticket { display: flex; flex-wrap: wrap; box-shadow: 0 14px 30px rgba(90, 70, 40, 0.12); border-radius: 6px; overflow: hidden; }
-  .stub { flex: 1 1 200px; max-width: 100%; display: flex; flex-direction: column; justify-content: space-between; gap: 20px; padding: 28px; border-right: 3px dashed var(--paper); }
-  .stub svg { overflow: visible; }
-  .admit { font-family: var(--mono); font-size: 13px; letter-spacing: 0.2em; text-transform: uppercase; }
-  .event { font-size: 30px; line-height: 1; }
-  .ticket-body { flex: 999 1 420px; display: flex; flex-direction: column; gap: 14px; padding: clamp(24px, 3vw, 40px); }
-  .ticket-body h3 { margin: 0; font-size: clamp(44px, 4.4vw, 62px); line-height: 0.9; }
-  .ticket-body p { margin: 0; max-width: 58ch; font-size: 18px; line-height: 1.6; font-weight: 300; }
-  .ticket-links { display: flex; flex-wrap: wrap; gap: 4px 28px; font-size: 28px; }
-  .ticket-links a { display: inline-flex; align-items: center; min-height: 44px; }
-  .invite { margin: 0; align-self: flex-end; font-size: 30px; color: var(--pen); transform: rotate(-2deg); }
-  @media (max-width: 640px) { .stub { border-right: 0; border-bottom: 3px dashed var(--paper); } }
-
-  .polaroids { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 40px 32px; padding: 12px 0; }
-  .polaroid { margin: 0; padding: 16px 16px 20px; background: #fff; box-shadow: 0 12px 26px rgba(90, 70, 40, 0.14); display: flex; flex-direction: column; gap: 14px; }
-  .polaroid img, .placeholder { aspect-ratio: 1 / 1; width: 100%; object-fit: cover; }
-  .placeholder { display: flex; align-items: center; justify-content: center; text-align: center; padding: 20px; font-family: var(--mono); font-size: 14px; color: #5a4a52; }
-  .polaroid figcaption { font-size: 26px; text-align: center; }
-
-  .empty { font-size: 30px; margin: 0; }
-
-  .hi-section { padding-top: clamp(90px, 10vw, 150px); display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr)); gap: 48px; align-items: center; }
-  .hi-copy { display: flex; flex-direction: column; gap: 22px; }
-  .hi-copy .page-title { font-size: clamp(64px, 8vw, 120px); }
-  .note-wrap { display: flex; justify-content: center; }
-  .lined {
-    position: relative; width: 100%; max-width: 400px; padding: 44px 34px 32px;
-    background: var(--card) repeating-linear-gradient(transparent 0 37px, var(--sky) 37px 39px);
-    transform: rotate(-3deg); box-shadow: 0 16px 32px rgba(90, 70, 40, 0.16);
-    font-size: 34px; line-height: 39px; color: var(--pen);
-  }
-  .lined p { margin: 0; }
-  .lined .small { font-size: 26px; }
 </style>
