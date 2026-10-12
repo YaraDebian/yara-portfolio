@@ -2,7 +2,7 @@ export const profile = {
   name: 'Yara Debian',
   role: 'AI Engineer',
   city: 'Barcelona',
-  email: 'yaradebian@gmail.com',
+  email: 'yaradebian1@gmail.com',
   description:
     'AI engineer who still thinks in Ruby, speaker who asks slightly-too-big questions, and weekend clay sculptor. Notes on code, art, philosophy and learning AI in public.',
   links: [
